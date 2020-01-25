@@ -91,9 +91,9 @@ var makeComment = function () {
 
 var makeComments = function () {
   var comments = [];
-  var commentsLenght = getRandomNumber(1, MAX_COMMENTS);
-  for (var i = 0; i < commentsLenght; i++) {
-    comments.push(makeComment(i));
+  var commentsLength = getRandomNumber(1, MAX_COMMENTS);
+  for (var i = 0; i < commentsLength; i++) {
+    comments.push(makeComment());
   }
   return comments;
 };
@@ -108,18 +108,19 @@ var makeMock = function (index) {
 };
 
 var makeMocks = function () {
-  var mocks = [];
+  var mocksData = [];
   for (var i = 0; i < PICS_COUNT; i++) {
-    mocks[i] = makeMock(i + 1);
+    mocksData[i] = makeMock(i + 1);
   }
-  return mocks;
+  return mocksData;
 };
 
 // ----------------------------------------------
 // создание разметки
 // ----------------------------------------------
-var createPictureElement = function (template, mock) {
-  var pictureElement = template.cloneNode(true);
+var createPictureElement = function (mock) {
+  var pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
+  var pictureElement = pictureTemplate.cloneNode(true);
 
   pictureElement.querySelector('.picture__img').src = mock.url;
   pictureElement.querySelector('.picture__img').title = mock.description;
@@ -130,23 +131,16 @@ var createPictureElement = function (template, mock) {
   return pictureElement;
 };
 
-// заполняет фрагмент разметки элементами на основе шаблона
-var createPicturesMarkup = function (mocks) {
-  var fragment = document.createDocumentFragment();
-  var pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
-
-  for (var i = 0; i < mocks.length; i++) {
-    var pictureElement = createPictureElement(pictureTemplate, mocks[i]);
-    fragment.appendChild(pictureElement);
-  }
-  return fragment;
-};
-
 // ----------------------------------------------
 // отрисовка списка фотографий на странице
 // ----------------------------------------------
-var showPictures = function (fragment) {
+var showPictures = function (mocks) {
   var containerElement = document.querySelector('.pictures.container');
+  var fragment = document.createDocumentFragment();
+
+  mocks.forEach(function (mock) {
+    fragment.appendChild(createPictureElement(mock));
+  });
   containerElement.appendChild(fragment);
 };
 
@@ -155,5 +149,4 @@ var showPictures = function (fragment) {
 // основная часть
 // ----------------------------------------------
 var mocks = makeMocks();
-var picturesList = createPicturesMarkup(mocks);
-showPictures(picturesList);
+showPictures(mocks);
