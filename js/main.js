@@ -51,7 +51,7 @@ var DESCRIPTIONS = [
   'Самолёт, летящий над облаками. Инверсионный след',
   'Евангельский хор Вашингтонгского Университета',
   'Классический Шевроле Импала',
-  'Домашние тапочки со светодиодной подсветкой',
+  'Домашние тапочки с LED-подсветкой',
   'Пальмы перед Long Beach Hotel на Маврикии',
   'Сервированый цыпленок по-тайски',
   'Закат солнца над морем',
@@ -120,26 +120,40 @@ var makeMocks = function () {
 // ----------------------------------------------
 var createPictureElement = function (template, mock) {
   var pictureElement = template.cloneNode(true);
+
   pictureElement.querySelector('.picture__img').src = mock.url;
   pictureElement.querySelector('.picture__img').title = mock.description;
   pictureElement.querySelector('.picture__img').alt = mock.description;
   pictureElement.querySelector('.picture__info .picture__comments').textContent = mock.comments.length;
   pictureElement.querySelector('.picture__info .picture__likes').textContent = mock.likes;
+
   return pictureElement;
 };
 
-// заполняет разметку элементами на основе шаблона
+// заполняет фрагмент разметки элементами на основе шаблона
 var createPicturesMarkup = function (mocks) {
+  var fragment = document.createDocumentFragment();
   var pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
-  var picsContainer = document.querySelector('.pictures.container');
+
   for (var i = 0; i < mocks.length; i++) {
     var pictureElement = createPictureElement(pictureTemplate, mocks[i]);
-    picsContainer.append(pictureElement);
+    fragment.appendChild(pictureElement);
   }
+  return fragment;
 };
+
+// ----------------------------------------------
+// отрисовка списка фотографий на странице
+// ----------------------------------------------
+var showPictures = function (fragment) {
+  var containerElement = document.querySelector('.pictures.container');
+  containerElement.appendChild(fragment);
+};
+
 
 // ----------------------------------------------
 // основная часть
 // ----------------------------------------------
 var mocks = makeMocks();
-createPicturesMarkup(mocks);
+var picturesList = createPicturesMarkup(mocks);
+showPictures(picturesList);
