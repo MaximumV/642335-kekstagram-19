@@ -60,6 +60,21 @@ var DESCRIPTIONS = [
   'Сафари-парк на Бали. Джип в озере с гиппопотамами',
 ];
 
+// -------------------------------------------------
+// вспомогательные функции
+// -------------------------------------------------
+var getRandomNumber = function (min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
+var getRandomBoolean = function () {
+  return !!(Math.round(Math.random()));
+};
+
+var getRandomArrayElement = function (array) {
+  return array[getRandomNumber(0, array.length - 1)];
+};
+
 // ----------------------------------------------
 // создание массива моков
 // ----------------------------------------------
@@ -100,23 +115,31 @@ var makeMocks = function () {
   return mocks;
 };
 
-// -------------------------------------------------
-// вспомогательные функции
-// -------------------------------------------------
-var getRandomNumber = function (min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+// ----------------------------------------------
+// создание разметки
+// ----------------------------------------------
+var createPictureElement = function (template, mock) {
+  var pictureElement = template.cloneNode(true);
+  pictureElement.querySelector('.picture__img').src = mock.url;
+  pictureElement.querySelector('.picture__img').title = mock.description;
+  pictureElement.querySelector('.picture__img').alt = mock.description;
+  pictureElement.querySelector('.picture__info .picture__comments').textContent = mock.comments.length;
+  pictureElement.querySelector('.picture__info .picture__likes').textContent = mock.likes;
+  return pictureElement;
 };
 
-var getRandomBoolean = function () {
-  return !!(Math.round(Math.random()));
+// заполняет разметку элементами на основе шаблона
+var createPicturesMarkup = function (mocks) {
+  var pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
+  var picsContainer = document.querySelector('.pictures.container');
+  for (var i = 0; i < mocks.length; i++) {
+    var pictureElement = createPictureElement(pictureTemplate, mocks[i]);
+    picsContainer.append(pictureElement);
+  }
 };
-
-var getRandomArrayElement = function (array) {
-  return array[getRandomNumber(0, array.length - 1)];
-};
-
 
 // ----------------------------------------------
 // основная часть
 // ----------------------------------------------
 var mocks = makeMocks();
+createPicturesMarkup(mocks);
