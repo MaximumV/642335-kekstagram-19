@@ -147,6 +147,46 @@ var showPictures = function (mocks) {
 // ----------------------------------------------
 // показывает полноразмерное изображение
 // ----------------------------------------------
+var getCommentTempate = function () {
+  return (
+    '<li class="social__comment">' +
+        '<img ' +
+            'class="social__picture" ' +
+            'src="" ' +
+            'alt="" ' +
+            'width="35" height="35">' +
+        '<p class="social__text"></p>' +
+    '</li>'
+  );
+};
+
+var createCommentElement = function (comment) {
+  var templateElement = document.createElement('template');
+  templateElement.innerHTML = getCommentTempate() + '\n';
+
+  var commentElement = templateElement.content.cloneNode(true);
+  var imgElement = commentElement.querySelector('.social__picture');
+  imgElement.src = comment.avatar;
+  imgElement.alt = comment.name;
+  imgElement.title = comment.name;
+
+  var messageElement = commentElement.querySelector('.social__text');
+  messageElement.textContent = comment.message;
+
+  return commentElement;
+};
+
+var showCommentsList = function (comments) {
+  var commentsListElement = document.querySelector('.social__comments');
+  var fragment = document.createDocumentFragment();
+
+  comments.forEach(function (comment) {
+    fragment.appendChild(createCommentElement(comment));
+  });
+  commentsListElement.innerHTML = '';
+  commentsListElement.appendChild(fragment);
+};
+
 var showFullScreenPicture = function (mock) {
   var bigPictureElement = document.querySelector('.big-picture');
 
@@ -159,6 +199,8 @@ var showFullScreenPicture = function (mock) {
   imgElement.src = mock.url;
   captionElement.textContent = mock.description;
   likesElement.textContent = mock.likes;
+
+  showCommentsList(mock.comments);
 
   // скрывает кнопку загрузки новых комментариев
   var commentsLoaderButton = bigPictureElement.querySelector('.comments-loader');
