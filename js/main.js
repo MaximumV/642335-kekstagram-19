@@ -5,7 +5,8 @@
 // ----------------------------------------------
 var PICS_COUNT = 25;
 var AVATARS_COUNT = 6;
-var MAX_COMMENTS = 6;
+var MAX_COMMENTS = 8;
+var COMMENTS_TO_SHOW = 5;
 var MIN_LIKES = 15;
 var MAX_LIKES = 200;
 
@@ -144,9 +145,86 @@ var showPictures = function (mocks) {
   containerElement.appendChild(fragment);
 };
 
+// ----------------------------------------------
+// показывает полноразмерное изображение
+// ----------------------------------------------
+var getCommentTemplate = function () {
+  return (
+    '<li class="social__comment">' +
+        '<img ' +
+            'class="social__picture" ' +
+            'src="" ' +
+            'alt="" ' +
+            'width="35" height="35">' +
+        '<p class="social__text"></p>' +
+    '</li>'
+  );
+};
+
+var createCommentElement = function (comment) {
+  var templateElement = document.createElement('template');
+  templateElement.innerHTML = getCommentTemplate() + '\n';
+
+  var commentElement = templateElement.content.cloneNode(true);
+  var imgElement = commentElement.querySelector('.social__picture');
+  imgElement.src = comment.avatar;
+  imgElement.alt = comment.name;
+  imgElement.title = comment.name;
+
+  var messageElement = commentElement.querySelector('.social__text');
+  messageElement.textContent = comment.message;
+
+  return commentElement;
+};
+
+var showCommentsList = function (comments) {
+  var commentsListElement = document.querySelector('.social__comments');
+  var fragment = document.createDocumentFragment();
+
+  comments.slice(0, COMMENTS_TO_SHOW).forEach(function (comment) {
+    fragment.appendChild(createCommentElement(comment));
+  });
+  commentsListElement.innerHTML = '';
+  commentsListElement.appendChild(fragment);
+};
+
+var showFullScreenPicture = function (mock) {
+  var bigPictureElement = document.querySelector('.big-picture');
+
+  var imgElement = bigPictureElement.querySelector('.big-picture__img img');
+  var headerElement = bigPictureElement.querySelector('.social__header');
+  var captionElement = headerElement.querySelector('.social__caption');
+  var likesElement = headerElement.querySelector('.social__likes .likes-count');
+
+  // заполняет информацию о фото в разметке
+  imgElement.src = mock.url;
+  captionElement.textContent = mock.description;
+  likesElement.textContent = mock.likes;
+
+  showCommentsList(mock.comments);
+
+  // скрывает кнопку загрузки новых комментариев
+  var commentsLoaderButton = bigPictureElement.querySelector('.comments-loader');
+  commentsLoaderButton.classList.add('hidden');
+
+  // скрывает блок счётчика комментариев
+  var commentsCountContainerElement = bigPictureElement.querySelector('.social__comment-count');
+  commentsCountContainerElement.classList.add('hidden');
+
+  // показывает количество комментариев
+  var commentsTotal = Math.min(mock.comments.length, COMMENTS_TO_SHOW);
+  commentsCountContainerElement.firstChild.textContent = commentsTotal + ' из ';
+  var commentsCountElement = commentsCountContainerElement.querySelector('.comments-count');
+  commentsCountElement.textContent = mock.comments.length;
+
+  document.querySelector('body').classList.add('modal-open');
+  bigPictureElement.classList.remove('hidden');
+};
+
 
 // ----------------------------------------------
 // основная часть
 // ----------------------------------------------
 var mocks = makeMocks();
 showPictures(mocks);
+showFullScreenPicture(mocks[0]);
