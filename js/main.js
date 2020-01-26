@@ -5,7 +5,8 @@
 // ----------------------------------------------
 var PICS_COUNT = 25;
 var AVATARS_COUNT = 6;
-var MAX_COMMENTS = 6;
+var MAX_COMMENTS = 8;
+var COMMENTS_TO_SHOW = 5;
 var MIN_LIKES = 15;
 var MAX_LIKES = 200;
 
@@ -147,7 +148,7 @@ var showPictures = function (mocks) {
 // ----------------------------------------------
 // показывает полноразмерное изображение
 // ----------------------------------------------
-var getCommentTempate = function () {
+var getCommentTemplate = function () {
   return (
     '<li class="social__comment">' +
         '<img ' +
@@ -162,7 +163,7 @@ var getCommentTempate = function () {
 
 var createCommentElement = function (comment) {
   var templateElement = document.createElement('template');
-  templateElement.innerHTML = getCommentTempate() + '\n';
+  templateElement.innerHTML = getCommentTemplate() + '\n';
 
   var commentElement = templateElement.content.cloneNode(true);
   var imgElement = commentElement.querySelector('.social__picture');
@@ -180,7 +181,7 @@ var showCommentsList = function (comments) {
   var commentsListElement = document.querySelector('.social__comments');
   var fragment = document.createDocumentFragment();
 
-  comments.forEach(function (comment) {
+  comments.slice(0, COMMENTS_TO_SHOW).forEach(function (comment) {
     fragment.appendChild(createCommentElement(comment));
   });
   commentsListElement.innerHTML = '';
@@ -204,11 +205,17 @@ var showFullScreenPicture = function (mock) {
 
   // скрывает кнопку загрузки новых комментариев
   var commentsLoaderButton = bigPictureElement.querySelector('.comments-loader');
-  commentsLoaderButton.classList.add('visually-hidden');
+  commentsLoaderButton.classList.add('hidden');
 
   // скрывает блок счётчика комментариев
   var commentsCountContainerElement = bigPictureElement.querySelector('.social__comment-count');
-  commentsCountContainerElement.classList.add('visually-hidden');
+  commentsCountContainerElement.classList.add('hidden');
+
+  // показывает количество комментариев
+  var commentsTotal = Math.min(mock.comments.length, COMMENTS_TO_SHOW);
+  commentsCountContainerElement.firstChild.textContent = commentsTotal + ' из ';
+  var commentsCountElement = commentsCountContainerElement.querySelector('.comments-count');
+  commentsCountElement.textContent = mock.comments.length;
 
   document.querySelector('body').classList.add('modal-open');
   bigPictureElement.classList.remove('hidden');
