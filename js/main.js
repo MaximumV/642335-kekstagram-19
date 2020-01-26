@@ -144,9 +144,38 @@ var showPictures = function (mocks) {
   containerElement.appendChild(fragment);
 };
 
+// ----------------------------------------------
+// показывает полноразмерное изображение
+// ----------------------------------------------
+var showFullScreenPicture = function (mock) {
+  var bigPictureElement = document.querySelector('.big-picture');
+
+  var imgElement = bigPictureElement.querySelector('.big-picture__img img');
+  var headerElement = bigPictureElement.querySelector('.social__header');
+  var captionElement = headerElement.querySelector('.social__caption');
+  var likesElement = headerElement.querySelector('.social__likes .likes-count');
+
+  // заполняет информацию о фото в разметке
+  imgElement.src = mock.url;
+  captionElement.textContent = mock.description;
+  likesElement.textContent = mock.likes;
+
+  // скрывает кнопку загрузки новых комментариев
+  var commentsLoaderButton = bigPictureElement.querySelector('.comments-loader');
+  commentsLoaderButton.classList.add('visually-hidden');
+
+  // скрывает блок счётчика комментариев
+  var commentsCountContainerElement = bigPictureElement.querySelector('.social__comment-count');
+  commentsCountContainerElement.classList.add('visually-hidden');
+
+  document.querySelector('body').classList.add('modal-open');
+  bigPictureElement.classList.remove('hidden');
+};
+
 
 // ----------------------------------------------
 // основная часть
 // ----------------------------------------------
 var mocks = makeMocks();
 showPictures(mocks);
+showFullScreenPicture(mocks[0]);
