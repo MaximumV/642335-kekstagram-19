@@ -12,6 +12,7 @@ var MAX_COMMENTS = 8;
 var COMMENTS_TO_SHOW = 5;
 var MIN_LIKES = 15;
 var MAX_LIKES = 200;
+var DEFAULT_PHOTO = 'img/upload-default-image.jpg';
 
 var MESSAGES = [
   'Всё отлично!',
@@ -230,13 +231,32 @@ var showFullScreenPicture = function (mock) {
 // ----------------------------------------------
 // загрузка изображения
 // ----------------------------------------------
+// пока загружает фото только из из папки проекта
+var getUploadFileName = function () {
+  var uploadFileInput = document.querySelector('#upload-file');
+  var fullFileName = '';
+  if (uploadFileInput.value.startsWith('C:\\fakepath')
+    && (uploadFileInput.files[0].type === 'image/jpeg')) {
+    var fileName = uploadFileInput.value.slice(12);
+    fullFileName = 'photos/' + fileName;
+  }
+  return fullFileName;
+};
+
 var showEditWindow = function () {
   var editWindow = document.querySelector('.img-upload__overlay');
+
+  var uploadFileName = getUploadFileName();
+  if (uploadFileName.length === 0) {
+    uploadFileName = DEFAULT_PHOTO;
+  }
+  editWindow.querySelector('.img-upload__preview img').src = uploadFileName;
 
   document.addEventListener('keydown', onEditWindowEscKeydown);
   editWindow.action = 'https://js.dump.academy/kekstagram';
   editWindow.classList.remove('hidden');
   document.querySelector('body').classList.add('modal-open');
+  addEditImageProcessing();
 };
 
 var closeUploadForm = function () {
@@ -245,7 +265,7 @@ var closeUploadForm = function () {
 
   document.querySelector('body').classList.remove('modal-open');
   editWindow.classList.add('hidden');
-  uploadFileInput.filename.value = '';
+  uploadFileInput.value = '';
   document.removeEventListener('keydown', onEditWindowEscKeydown);
 };
 
@@ -265,6 +285,8 @@ var addUploadProcessing = function () {
   var uploadForm = document.querySelector('#upload-select-image');
   var uploadFileInput = document.querySelector('#upload-file');
   var resetButton = uploadForm.querySelector('#upload-cancel');
+
+  uploadFileInput.accept = 'image/*';
   resetButton.tabindex = '0';
 
   uploadFileInput.addEventListener('change', function () {
@@ -279,6 +301,8 @@ var addUploadProcessing = function () {
 // ----------------------------------------------
 // редактирование изображения
 // ----------------------------------------------
+var addEditImageProcessing = function () {
+};
 
 // ----------------------------------------------
 // основная часть
