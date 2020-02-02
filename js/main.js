@@ -1,5 +1,8 @@
 'use strict';
 
+var ESC_KEY = 'Escape';
+var ENTER_KEY = 'Enter';
+
 // ----------------------------------------------
 // тестовые данные
 // ----------------------------------------------
@@ -189,6 +192,9 @@ var showCommentsList = function (comments) {
 };
 
 var showFullScreenPicture = function (mock) {
+  if (!mock) {
+    return; /* чтобы линтер не ругался */
+  }
   var bigPictureElement = document.querySelector('.big-picture');
 
   var imgElement = bigPictureElement.querySelector('.big-picture__img img');
@@ -221,10 +227,63 @@ var showFullScreenPicture = function (mock) {
   bigPictureElement.classList.remove('hidden');
 };
 
+// ----------------------------------------------
+// загрузка изображения
+// ----------------------------------------------
+var showEditWindow = function () {
+  var editWindow = document.querySelector('.img-upload__overlay');
+
+  document.addEventListener('keydown', onEditWindowEscKeydown);
+  editWindow.action = 'https://js.dump.academy/kekstagram';
+  editWindow.classList.remove('hidden');
+  document.querySelector('body').classList.add('modal-open');
+};
+
+var closeUploadForm = function () {
+  var editWindow = document.querySelector('.img-upload__overlay');
+  var uploadFileInput = document.querySelector('#upload-file');
+
+  document.querySelector('body').classList.remove('modal-open');
+  editWindow.classList.add('hidden');
+  uploadFileInput.filename.value = '';
+  document.removeEventListener('keydown', onEditWindowEscKeydown);
+};
+
+var onEditWindowEscKeydown = function (evt) {
+  if (evt.key === ESC_KEY) {
+    closeUploadForm();
+  }
+};
+
+var onResetButtonEnterKeydown = function (evt) {
+  if (evt.key === ENTER_KEY) {
+    closeUploadForm();
+  }
+};
+
+var addUploadProcessing = function () {
+  var uploadForm = document.querySelector('#upload-select-image');
+  var uploadFileInput = document.querySelector('#upload-file');
+  var resetButton = uploadForm.querySelector('#upload-cancel');
+  resetButton.tabindex = '0';
+
+  uploadFileInput.addEventListener('change', function () {
+    showEditWindow();
+  });
+  resetButton.addEventListener('click', function () {
+    closeUploadForm();
+  });
+  resetButton.addEventListener('keydown', onResetButtonEnterKeydown);
+};
+
+// ----------------------------------------------
+// редактирование изображения
+// ----------------------------------------------
 
 // ----------------------------------------------
 // основная часть
 // ----------------------------------------------
 var mocks = makeMocks();
 showPictures(mocks);
-showFullScreenPicture(mocks[0]);
+showFullScreenPicture();
+addUploadProcessing();
