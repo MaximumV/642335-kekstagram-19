@@ -14,6 +14,12 @@ var MIN_LIKES = 15;
 var MAX_LIKES = 200;
 var DEFAULT_PHOTO = 'img/upload-default-image.jpg';
 
+var SCALE_INTERVAL = 25;
+var DEFAULT_SIZE = 100;
+var MIN_SIZE = 25;
+var MAX_SIZE = 100;
+
+
 var MESSAGES = [
   'Всё отлично!',
   'В целом всё неплохо. Но не всё.',
@@ -301,7 +307,60 @@ var addUploadProcessing = function () {
 // ----------------------------------------------
 // редактирование изображения
 // ----------------------------------------------
+
+// При изменении значения поля .scale__control--value изображению внутри .img-upload__preview должен добавляться соответствующий стиль CSS, который с помощью трансформации scale задаёт масштаб. Например, если в поле стоит значение 75%, то в стиле изображения должно быть написано transform: scale(0.75)
+
+var setSize = function (size) {
+  var imageElement = document.querySelector('.img-upload__preview img');
+  var sizeControls = document.querySelector('.img-upload__scale');
+  var sizeIndicator = sizeControls.querySelector('.scale__control--value');
+
+  sizeIndicator.value = size + '%';
+  imageElement.style.transform = 'scale(' + size / 100 + ')';
+};
+
+var incrementSize = function () {
+  var sizeControls = document.querySelector('.img-upload__scale');
+  var sizeIndicator = sizeControls.querySelector('.scale__control--value');
+  var size = parseInt(sizeIndicator.value, 10);
+
+  size = size + SCALE_INTERVAL;
+  if (size > MAX_SIZE) {
+    size = MAX_SIZE;
+  }
+  setSize(size);
+};
+
+var decrementSize = function () {
+  var sizeControls = document.querySelector('.img-upload__scale');
+  var sizeIndicator = sizeControls.querySelector('.scale__control--value');
+  var size = parseInt(sizeIndicator.value, 10);
+
+  size = size - SCALE_INTERVAL;
+  if (size < MIN_SIZE) {
+    size = MIN_SIZE;
+  }
+  setSize(size);
+};
+
+var initSizeControls = function () {
+  var sizeControls = document.querySelector('.img-upload__scale');
+  var sizeDecControl = sizeControls.querySelector('.scale__control--smaller');
+  var sizeIncControl = sizeControls.querySelector('.scale__control--bigger');
+
+  sizeDecControl.addEventListener('click', function () {
+    decrementSize();
+  });
+
+  sizeIncControl.addEventListener('click', function () {
+    incrementSize();
+  });
+
+  setSize(DEFAULT_SIZE);
+};
+
 var addEditImageProcessing = function () {
+  initSizeControls();
 };
 
 // ----------------------------------------------
