@@ -18,6 +18,7 @@ var SIZE_SCALE_INTERVAL = 25;
 var DEFAULT_SIZE = 100;
 var MIN_SIZE = 25;
 var MAX_SIZE = 100;
+var DEFAULT_SLIDER_LEVEL = 100;
 
 var MESSAGES = [
   'Всё отлично!',
@@ -357,14 +358,76 @@ var initSizeControls = function () {
 };
 
 // слайдер
-// Для этого добавим на ползунок слайдера .effect-level__pin обработчик события mouseup
-// Интенсивность эффекта регулируется перемещением ползунка в слайдере .effect-level__pin.
-// Уровень эффекта записывается в поле .effect-level__value.
-var resetSliderLevel = function () {
+var getSliderLevel = function () {
+  var sliderElement = document.querySelector('.effect-level');
+  var sliderValue = sliderElement.querySelector('.effect-level__value');
+  return sliderValue.value;
+};
+
+var setSliderLevel = function (level) {
+  var sliderElement = document.querySelector('.effect-level');
+  var sliderPin = sliderElement.querySelector('.effect-level__pin');
+  var sliderDepth = sliderElement.querySelector('.effect-level__depth');
+  var sliderValue = sliderElement.querySelector('.effect-level__value');
+
+  sliderValue.value = level;
+  sliderPin.style.left = level + '%';
+  sliderDepth.style.width = level + '%';
+  applyEffectLevel();
+};
+
+var showSlider = function () {
+  var sliderElement = document.querySelector('.effect-level');
+  sliderElement.classList.remove('hidden');
+};
+
+var hideSlider = function () {
+  var sliderElement = document.querySelector('.effect-level');
+  sliderElement.classList.add('hidden');
+};
+
+var resetSlider = function () {
+  setSliderLevel(DEFAULT_SLIDER_LEVEL);
+  var effect = getCurrentEffect();
+  if (effect === 'none') {
+    hideSlider();
+  } else {
+    showSlider();
+  }
+};
+
+var onSliderMouseup = function (evt) {
+  var sliderElement = document.querySelector('.effect-level');
+  var sliderLine = sliderElement.querySelector('.effect-level__line');
+
+  var sliderWidth = sliderElement.offsetWidth;
+  var lineWidth = sliderLine.offsetWidth;
+  var sliderMargin = (sliderWidth - lineWidth) / 2;
+  var mouseX = evt.offsetX; /* mouseX coord */
+  var sliderLevel = 0;
+
+  if (mouseX > lineWidth + sliderMargin) {
+    sliderLevel = 100;
+  } else if (mouseX > sliderMargin) {
+    sliderLevel = Math.round((mouseX - sliderMargin) / lineWidth * 100);
+  }
+  setSliderLevel(sliderLevel);
+};
+
+var initSlider = function () {
+  var sliderElement = document.querySelector('.effect-level');
+  sliderElement.addEventListener('mouseup', onSliderMouseup);
 };
 
 // эффекты
-var setFilter = function (effect) {
+var getCurrentEffect = function () {
+  var uploadForm = document.querySelector('#upload-select-image');
+  var effectsRadioNodeList = uploadForm.effect;
+
+  return effectsRadioNodeList.value;
+};
+
+var applyFilter = function (effect) {
   var imageElement = document.querySelector('.img-upload__preview img');
 
   imageElement.classList.forEach(function (className) {
@@ -372,25 +435,60 @@ var setFilter = function (effect) {
       imageElement.classList.remove(className);
     }
   });
-  resetSliderLevel();
+  resetSlider();
   imageElement.classList.add('effects__preview--' + effect);
 };
 
 var initFilter = function () {
-  var uploadForm = document.querySelector('#upload-select-image');
-  var effectsContainer = uploadForm.querySelector('.effects');
-  var effectsRadioNodeList = uploadForm.effect;
+  var effectsContainer = document.querySelector('.effects');
 
   effectsContainer.addEventListener('change', function () {
-    setFilter(effectsRadioNodeList.value);
+    applyFilter(getCurrentEffect());
   });
-  setFilter('none');
+  applyFilter('none');
+};
+
+// применить фильтры и уровень слайдера к картинке
+var getFilterStyleString = function (effect, effectLevel) {
+  // var cssString = 'none';
+  var cssString = '';
+
+  switch (effect) {
+    case ('none'):
+      cssString = '';
+      break;
+    case ('chrome'):
+      cssString = 'grayscale(' + effectLevel / 100 + ')';
+      break;
+    case ('sepia'):
+      cssString = 'sepia(' + effectLevel / 100 + ')';
+      break;
+    case ('marvin'):
+      cssString = 'invert(' + effectLevel + '%)';
+      break;
+    case ('phobos'):
+      cssString = 'blur(' + (1 + 2 * effectLevel / 100) + 'px)';
+      break;
+    case ('heat'):
+      cssString = 'brightness(' + (1 + 2 * effectLevel / 100) + ')';
+      break;
+  }
+  return cssString;
+};
+
+var applyEffectLevel = function () {
+  // применяет текушие значенияк контролов к картинке
+  var imageElement = document.querySelector('.img-upload__preview img');
+  var effect = getCurrentEffect();
+  var level = getSliderLevel();
+
+  imageElement.style.filter = getFilterStyleString(effect, level);
 };
 
 // окно редактирования
 var addEditImageProcessing = function () {
   initSizeControls();
-  // initSlider();
+  initSlider();
   initFilter();
 };
 
