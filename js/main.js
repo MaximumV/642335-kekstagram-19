@@ -19,6 +19,8 @@ var DEFAULT_SIZE = 100;
 var MIN_SIZE = 25;
 var MAX_SIZE = 100;
 var DEFAULT_SLIDER_LEVEL = 100;
+var MAX_HASHTAGS_COUNT = 5;
+var MAX_HASHTAG_LENGTH = 20;
 
 var MESSAGES = [
   'Всё отлично!',
@@ -84,6 +86,15 @@ var getRandomBoolean = function () {
 
 var getRandomArrayElement = function (array) {
   return array[getRandomNumber(0, array.length - 1)];
+};
+
+var isArrayUnique = function (array) {
+  for (var i = 0; i < array.length - 1; i++) {
+    if (array.includes(array[i], i + 1)) {
+      return false;
+    }
+  }
+  return true;
 };
 
 // ----------------------------------------------
@@ -450,7 +461,6 @@ var initFilter = function () {
 
 // применить фильтры и уровень слайдера к картинке
 var getFilterStyleString = function (effect, effectLevel) {
-  // var cssString = 'none';
   var cssString = '';
 
   switch (effect) {
@@ -485,11 +495,80 @@ var applyEffectLevel = function () {
   imageElement.style.filter = getFilterStyleString(effect, level);
 };
 
+// хэштеги
+var checkHashtagsValidity = function () {
+  var hashtagsInput = document.querySelector('.text__hashtags');
+  hashtagsInput.setCustomValidity('');
+
+  // разделяет строку на отдельные слова
+  var tags = hashtagsInput.value.split(' ');
+  tags = tags.filter(function (tag) {
+    return tag !== '';
+  });
+
+  if (tags.length > MAX_HASHTAGS_COUNT) {
+    hashtagsInput.setCustomValidity('Нельзя указать больше ' + MAX_HASHTAGS_COUNT + ' хэш-тегов');
+    return;
+  }
+
+  // уникальные
+  if (!isArrayUnique(tags.map(function (item) {
+    return item.toUpperCase();
+  }))) {
+    hashtagsInput.setCustomValidity('Один и тот же хэш-тег не может быть использован дважды');
+    return;
+  }
+
+  tags.forEach(function (tag) {
+    if (tag[0] !== '#') {
+      hashtagsInput.setCustomValidity('Хэш-тег должен начинаться с символа #');
+    } else if (tag === '#') {
+      hashtagsInput.setCustomValidity('Хэш-тег не может состоять только из одной решётки');
+    } else if (tag.length > MAX_HASHTAG_LENGTH) {
+      hashtagsInput.setCustomValidity('Максимальная длина  хэш-тега ' + MAX_HASHTAG_LENGTH + ' символов');
+    } else if (!tag.match(/^#[0-9a-zA-Zа-яА-Я]+$/)) {
+      hashtagsInput.setCustomValidity('Строка после решётки должна состоять из букв и чисел');
+    } else {
+      hashtagsInput.setCustomValidity('');
+    }
+  });
+};
+
+var makeSpaced = function (mark, text) {
+  if (text.length > 0) {
+    if (text.slice(-2, -1) !== ' ') {
+      text = text.slice(0, -1) + ' ' + mark;
+    }
+  }
+  return text;
+};
+
+var initHashtags = function () {
+  var hashtagsInput = document.querySelector('.text__hashtags');
+
+  hashtagsInput.addEventListener('focus', function () {
+    document.removeEventListener('keydown', onEditWindowEscKeydown);
+  });
+  hashtagsInput.addEventListener('blur', function () {
+    document.addEventListener('keydown', onEditWindowEscKeydown);
+  });
+  hashtagsInput.addEventListener('change', function () {
+    checkHashtagsValidity();
+  });
+  hashtagsInput.addEventListener('input', function (evt) {
+    // добавляет пробел при вводе символа # с клавиатуры
+    if (evt.data === '#') {
+      evt.target.value = makeSpaced('#', evt.target.value);
+    }
+  });
+};
+
 // окно редактирования
 var addEditImageProcessing = function () {
   initSizeControls();
   initSlider();
   initFilter();
+  initHashtags();
 };
 
 // ----------------------------------------------
