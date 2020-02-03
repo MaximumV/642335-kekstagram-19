@@ -14,11 +14,10 @@ var MIN_LIKES = 15;
 var MAX_LIKES = 200;
 var DEFAULT_PHOTO = 'img/upload-default-image.jpg';
 
-var SCALE_INTERVAL = 25;
+var SIZE_SCALE_INTERVAL = 25;
 var DEFAULT_SIZE = 100;
 var MIN_SIZE = 25;
 var MAX_SIZE = 100;
-
 
 var MESSAGES = [
   'Всё отлично!',
@@ -308,8 +307,7 @@ var addUploadProcessing = function () {
 // редактирование изображения
 // ----------------------------------------------
 
-// При изменении значения поля .scale__control--value изображению внутри .img-upload__preview должен добавляться соответствующий стиль CSS, который с помощью трансформации scale задаёт масштаб. Например, если в поле стоит значение 75%, то в стиле изображения должно быть написано transform: scale(0.75)
-
+// масштабирование
 var setSize = function (size) {
   var imageElement = document.querySelector('.img-upload__preview img');
   var sizeControls = document.querySelector('.img-upload__scale');
@@ -324,7 +322,7 @@ var incrementSize = function () {
   var sizeIndicator = sizeControls.querySelector('.scale__control--value');
   var size = parseInt(sizeIndicator.value, 10);
 
-  size = size + SCALE_INTERVAL;
+  size = size + SIZE_SCALE_INTERVAL;
   if (size > MAX_SIZE) {
     size = MAX_SIZE;
   }
@@ -336,7 +334,7 @@ var decrementSize = function () {
   var sizeIndicator = sizeControls.querySelector('.scale__control--value');
   var size = parseInt(sizeIndicator.value, 10);
 
-  size = size - SCALE_INTERVAL;
+  size = size - SIZE_SCALE_INTERVAL;
   if (size < MIN_SIZE) {
     size = MIN_SIZE;
   }
@@ -351,7 +349,6 @@ var initSizeControls = function () {
   sizeDecControl.addEventListener('click', function () {
     decrementSize();
   });
-
   sizeIncControl.addEventListener('click', function () {
     incrementSize();
   });
@@ -359,8 +356,42 @@ var initSizeControls = function () {
   setSize(DEFAULT_SIZE);
 };
 
+// слайдер
+// Для этого добавим на ползунок слайдера .effect-level__pin обработчик события mouseup
+// Интенсивность эффекта регулируется перемещением ползунка в слайдере .effect-level__pin.
+// Уровень эффекта записывается в поле .effect-level__value.
+var resetSliderLevel = function () {
+};
+
+// эффекты
+var setFilter = function (effect) {
+  var imageElement = document.querySelector('.img-upload__preview img');
+
+  imageElement.classList.forEach(function (className) {
+    if (className.includes('effects__preview--')) {
+      imageElement.classList.remove(className);
+    }
+  });
+  resetSliderLevel();
+  imageElement.classList.add('effects__preview--' + effect);
+};
+
+var initFilter = function () {
+  var uploadForm = document.querySelector('#upload-select-image');
+  var effectsContainer = uploadForm.querySelector('.effects');
+  var effectsRadioNodeList = uploadForm.effect;
+
+  effectsContainer.addEventListener('change', function () {
+    setFilter(effectsRadioNodeList.value);
+  });
+  setFilter('none');
+};
+
+// окно редактирования
 var addEditImageProcessing = function () {
   initSizeControls();
+  // initSlider();
+  initFilter();
 };
 
 // ----------------------------------------------
