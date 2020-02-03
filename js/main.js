@@ -259,7 +259,6 @@ var showEditWindow = function () {
   editWindow.querySelector('.img-upload__preview img').src = uploadFileName;
 
   document.addEventListener('keydown', onEditWindowEscKeydown);
-  editWindow.action = 'https://js.dump.academy/kekstagram';
   editWindow.classList.remove('hidden');
   document.querySelector('body').classList.add('modal-open');
   addEditImageProcessing();
@@ -292,6 +291,7 @@ var addUploadProcessing = function () {
   var uploadFileInput = document.querySelector('#upload-file');
   var resetButton = uploadForm.querySelector('#upload-cancel');
 
+  uploadForm.action = 'https://js.dump.academy/kekstagram';
   uploadFileInput.accept = 'image/*';
   resetButton.tabindex = '0';
 
