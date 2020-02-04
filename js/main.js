@@ -164,7 +164,7 @@ var showPictures = function (mocks) {
     fragment.appendChild(createPictureElement(mock));
   });
   containerElement.appendChild(fragment);
-// ............................................
+  // ............................................
   containerElement.addEventListener('click', onPicturesContainerClick);
 };
 
