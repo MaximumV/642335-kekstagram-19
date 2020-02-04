@@ -164,6 +164,24 @@ var showPictures = function (mocks) {
     fragment.appendChild(createPictureElement(mock));
   });
   containerElement.appendChild(fragment);
+  // ............................................
+  containerElement.addEventListener('click', onPicturesContainerClick);
+};
+
+var onPicturesContainerClick = function (evt) {
+  // если был клик по картинке
+  if (evt.target.classList.contains('picture')
+  || evt.target.matches('.picture [class^="picture__"]')) {
+    // элемент img
+    var pictureClicked = evt.target.closest('.pictures .picture').firstElementChild;
+    // номер картинки из названия файла
+    var pictureFileName = pictureClicked.src.match(/\d{1,2}\.jpg$/);
+    var number = parseInt(pictureFileName, 10);
+    var pictureNumber = !isNaN(number) ? +number : 1;
+
+    showFullScreenPicture(mocks[pictureNumber - 1]);
+  }
+// ........................................
 };
 
 // ----------------------------------------------
@@ -243,6 +261,14 @@ var showFullScreenPicture = function (mock) {
 
   document.querySelector('body').classList.add('modal-open');
   bigPictureElement.classList.remove('hidden');
+  // ........................................
+  var cancelButton = bigPictureElement.querySelector('#picture-cancel');
+  cancelButton.addEventListener('click', function () {
+    bigPictureElement.classList.add('hidden');
+    document.querySelector('body').classList.remove('modal-open');
+  });
+  // cancelButton.addEventListener('keydown', onCancelButtonEnterKeydown);
+  // ........................................
 };
 
 // ----------------------------------------------
@@ -408,13 +434,16 @@ var resetSlider = function () {
 };
 
 var onSliderMouseup = function (evt) {
+  if (evt.button !== 0) {
+    return;
+  }
   var sliderElement = document.querySelector('.effect-level');
   var sliderLine = sliderElement.querySelector('.effect-level__line');
 
   var sliderWidth = sliderElement.offsetWidth;
   var lineWidth = sliderLine.offsetWidth;
   var sliderMargin = (sliderWidth - lineWidth) / 2;
-  var mouseX = evt.offsetX; /* mouseX coord */
+  var mouseX = evt.offsetX;
   var sliderLevel = 0;
 
   if (mouseX > lineWidth + sliderMargin) {
