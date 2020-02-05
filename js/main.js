@@ -21,6 +21,7 @@ var MAX_SIZE = 100;
 var DEFAULT_SLIDER_LEVEL = 100;
 var MAX_HASHTAGS_COUNT = 5;
 var MAX_HASHTAG_LENGTH = 20;
+var MAX_COMMENT_LENGTH = 140;
 
 var MESSAGES = [
   'Всё отлично!',
@@ -617,8 +618,8 @@ var clearHashtags = function () {
 var checkCommentValidity = function () {
   var userDescription = document.querySelector('.text__description');
 
-  if (userDescription.value.length > 140) {
-    userDescription.setCustomValidity('длина комментария не может составлять больше 140 символов');
+  if (userDescription.value.length > MAX_COMMENT_LENGTH) {
+    userDescription.setCustomValidity('длина комментария не может составлять больше ' + MAX_COMMENT_LENGTH + ' символов');
   } else {
     userDescription.setCustomValidity('');
   }
@@ -638,7 +639,7 @@ var initComment = function () {
     checkCommentValidity();
   });
   userDescription.addEventListener('input', function (evt) {
-    if (evt.target.value.length <= 140) {
+    if (evt.target.value.length <= MAX_COMMENT_LENGTH) {
       evt.target.setCustomValidity('');
     }
   });
