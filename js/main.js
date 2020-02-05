@@ -437,20 +437,26 @@ var onSliderMouseup = function (evt) {
   if (evt.button !== 0) {
     return;
   }
+  if (evt.target.classList.contains('effect-level__pin')) {
+    // клик на сам ползунок - здесь ничего не перемещаем
+    return;
+  }
   var sliderElement = document.querySelector('.effect-level');
   var sliderLine = sliderElement.querySelector('.effect-level__line');
 
   var sliderWidth = sliderElement.offsetWidth;
   var lineWidth = sliderLine.offsetWidth;
   var sliderMargin = (sliderWidth - lineWidth) / 2;
-  var mouseX = evt.offsetX;
+  var posX = evt.offsetX;
   var sliderLevel = 0;
 
-  if (mouseX > lineWidth + sliderMargin) {
-    sliderLevel = 100;
-  } else if (mouseX > sliderMargin) {
-    sliderLevel = Math.round((mouseX - sliderMargin) / lineWidth * 100);
+  if (evt.target === evt.currentTarget) {
+    // клик снаружи линии - вычитаем поля
+    posX = posX < sliderMargin ? 0 : posX - sliderMargin;
+    posX = posX < lineWidth ? posX : lineWidth;
   }
+
+  sliderLevel = Math.round(posX / lineWidth * 100);
   setSliderLevel(sliderLevel);
 };
 
@@ -490,29 +496,21 @@ var initFilter = function () {
 
 // применить фильтры и уровень слайдера к картинке
 var getFilterStyleString = function (effect, effectLevel) {
-  var cssString = '';
-
   switch (effect) {
     case ('none'):
-      cssString = '';
-      break;
+      return '';
     case ('chrome'):
-      cssString = 'grayscale(' + effectLevel / 100 + ')';
-      break;
+      return 'grayscale(' + effectLevel / 100 + ')';
     case ('sepia'):
-      cssString = 'sepia(' + effectLevel / 100 + ')';
-      break;
+      return 'sepia(' + effectLevel / 100 + ')';
     case ('marvin'):
-      cssString = 'invert(' + effectLevel + '%)';
-      break;
+      return 'invert(' + effectLevel + '%)';
     case ('phobos'):
-      cssString = 'blur(' + (1 + 2 * effectLevel / 100) + 'px)';
-      break;
+      return 'blur(' + (1 + 2 * effectLevel / 100) + 'px)';
     case ('heat'):
-      cssString = 'brightness(' + (1 + 2 * effectLevel / 100) + ')';
-      break;
+      return 'brightness(' + (1 + 2 * effectLevel / 100) + ')';
   }
-  return cssString;
+  return '';
 };
 
 var applyEffectLevel = function () {
