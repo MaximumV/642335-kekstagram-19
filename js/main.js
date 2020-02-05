@@ -295,10 +295,11 @@ var showEditWindow = function () {
   }
   editWindow.querySelector('.img-upload__preview img').src = uploadFileName;
 
+  resetEditImage();
+
   document.addEventListener('keydown', onEditWindowEscKeydown);
   editWindow.classList.remove('hidden');
   document.querySelector('body').classList.add('modal-open');
-  addEditImageProcessing();
 };
 
 var closeUploadForm = function () {
@@ -313,12 +314,14 @@ var closeUploadForm = function () {
 
 var onEditWindowEscKeydown = function (evt) {
   if (evt.key === ESC_KEY) {
+    resetEditImage();
     closeUploadForm();
   }
 };
 
 var onResetButtonEnterKeydown = function (evt) {
   if (evt.key === ENTER_KEY) {
+    resetEditImage();
     closeUploadForm();
   }
 };
@@ -391,6 +394,10 @@ var initSizeControls = function () {
     incrementSize();
   });
 
+  resetSizeControls();
+};
+
+var resetSizeControls = function () {
   setSize(DEFAULT_SIZE);
 };
 
@@ -473,6 +480,11 @@ var getCurrentEffect = function () {
   return effectsRadioNodeList.value;
 };
 
+var setCurrentEffect = function (effect) {
+  var uploadForm = document.querySelector('#upload-select-image');
+  uploadForm.effect.value = effect;
+};
+
 var applyFilter = function (effect) {
   var imageElement = document.querySelector('.img-upload__preview img');
 
@@ -491,6 +503,11 @@ var initFilter = function () {
   effectsContainer.addEventListener('change', function () {
     applyFilter(getCurrentEffect());
   });
+  resetFilter();
+};
+
+var resetFilter = function () {
+  setCurrentEffect('none');
   applyFilter('none');
 };
 
@@ -590,6 +607,12 @@ var initHashtags = function () {
   });
 };
 
+var clearHashtags = function () {
+  var hashtagsInput = document.querySelector('.text__hashtags');
+  hashtagsInput.setCustomValidity('');
+  hashtagsInput.value = '';
+};
+
 // комментарий
 var checkCommentValidity = function () {
   var userDescription = document.querySelector('.text__description');
@@ -621,6 +644,12 @@ var initComment = function () {
   });
 };
 
+var clearComment = function () {
+  var userDescription = document.querySelector('.text__description');
+  userDescription.setCustomValidity('');
+  userDescription.value = '';
+};
+
 // окно редактирования
 var addEditImageProcessing = function () {
   initSizeControls();
@@ -630,6 +659,13 @@ var addEditImageProcessing = function () {
   initComment();
 };
 
+var resetEditImage = function () {
+  resetSizeControls();
+  resetFilter();
+  clearHashtags();
+  clearComment();
+};
+
 // ----------------------------------------------
 // основная часть
 // ----------------------------------------------
@@ -637,3 +673,4 @@ var mocks = makeMocks();
 showPictures(mocks);
 showFullScreenPicture();
 addUploadProcessing();
+addEditImageProcessing();
