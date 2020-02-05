@@ -590,12 +590,44 @@ var initHashtags = function () {
   });
 };
 
+// комментарий
+var checkCommentValidity = function () {
+  var userDescription = document.querySelector('.text__description');
+
+  if (userDescription.value.length > 140) {
+    userDescription.setCustomValidity('длина комментария не может составлять больше 140 символов');
+  } else {
+    userDescription.setCustomValidity('');
+  }
+};
+
+var initComment = function () {
+  var userDescription = document.querySelector('.text__description');
+
+  userDescription.addEventListener('focus', function () {
+    document.removeEventListener('keydown', onEditWindowEscKeydown);
+  });
+  userDescription.addEventListener('blur', function () {
+    document.addEventListener('keydown', onEditWindowEscKeydown);
+  });
+
+  userDescription.addEventListener('change', function () {
+    checkCommentValidity();
+  });
+  userDescription.addEventListener('input', function (evt) {
+    if (evt.target.value.length <= 140) {
+      evt.target.setCustomValidity('');
+    }
+  });
+};
+
 // окно редактирования
 var addEditImageProcessing = function () {
   initSizeControls();
   initSlider();
   initFilter();
   initHashtags();
+  initComment();
 };
 
 // ----------------------------------------------
