@@ -295,10 +295,11 @@ var showEditWindow = function () {
   }
   editWindow.querySelector('.img-upload__preview img').src = uploadFileName;
 
+  resetEditImage();
+
   document.addEventListener('keydown', onEditWindowEscKeydown);
   editWindow.classList.remove('hidden');
   document.querySelector('body').classList.add('modal-open');
-  addEditImageProcessing();
 };
 
 var closeUploadForm = function () {
@@ -313,12 +314,14 @@ var closeUploadForm = function () {
 
 var onEditWindowEscKeydown = function (evt) {
   if (evt.key === ESC_KEY) {
+    resetEditImage();
     closeUploadForm();
   }
 };
 
 var onResetButtonEnterKeydown = function (evt) {
   if (evt.key === ENTER_KEY) {
+    resetEditImage();
     closeUploadForm();
   }
 };
@@ -391,6 +394,10 @@ var initSizeControls = function () {
     incrementSize();
   });
 
+  resetSizeControls();
+};
+
+var resetSizeControls = function () {
   setSize(DEFAULT_SIZE);
 };
 
@@ -437,20 +444,26 @@ var onSliderMouseup = function (evt) {
   if (evt.button !== 0) {
     return;
   }
+  if (evt.target.classList.contains('effect-level__pin')) {
+    // клик на сам ползунок - здесь ничего не перемещаем
+    return;
+  }
   var sliderElement = document.querySelector('.effect-level');
   var sliderLine = sliderElement.querySelector('.effect-level__line');
 
   var sliderWidth = sliderElement.offsetWidth;
   var lineWidth = sliderLine.offsetWidth;
   var sliderMargin = (sliderWidth - lineWidth) / 2;
-  var mouseX = evt.offsetX;
+  var posX = evt.offsetX;
   var sliderLevel = 0;
 
-  if (mouseX > lineWidth + sliderMargin) {
-    sliderLevel = 100;
-  } else if (mouseX > sliderMargin) {
-    sliderLevel = Math.round((mouseX - sliderMargin) / lineWidth * 100);
+  if (evt.target === evt.currentTarget) {
+    // клик снаружи линии - вычитаем поля
+    posX = posX < sliderMargin ? 0 : posX - sliderMargin;
+    posX = posX < lineWidth ? posX : lineWidth;
   }
+
+  sliderLevel = Math.round(posX / lineWidth * 100);
   setSliderLevel(sliderLevel);
 };
 
@@ -465,6 +478,11 @@ var getCurrentEffect = function () {
   var effectsRadioNodeList = uploadForm.effect;
 
   return effectsRadioNodeList.value;
+};
+
+var setCurrentEffect = function (effect) {
+  var uploadForm = document.querySelector('#upload-select-image');
+  uploadForm.effect.value = effect;
 };
 
 var applyFilter = function (effect) {
@@ -485,34 +503,31 @@ var initFilter = function () {
   effectsContainer.addEventListener('change', function () {
     applyFilter(getCurrentEffect());
   });
+  resetFilter();
+};
+
+var resetFilter = function () {
+  setCurrentEffect('none');
   applyFilter('none');
 };
 
 // применить фильтры и уровень слайдера к картинке
 var getFilterStyleString = function (effect, effectLevel) {
-  var cssString = '';
-
   switch (effect) {
     case ('none'):
-      cssString = '';
-      break;
+      return '';
     case ('chrome'):
-      cssString = 'grayscale(' + effectLevel / 100 + ')';
-      break;
+      return 'grayscale(' + effectLevel / 100 + ')';
     case ('sepia'):
-      cssString = 'sepia(' + effectLevel / 100 + ')';
-      break;
+      return 'sepia(' + effectLevel / 100 + ')';
     case ('marvin'):
-      cssString = 'invert(' + effectLevel + '%)';
-      break;
+      return 'invert(' + effectLevel + '%)';
     case ('phobos'):
-      cssString = 'blur(' + (1 + 2 * effectLevel / 100) + 'px)';
-      break;
+      return 'blur(' + (1 + 2 * effectLevel / 100) + 'px)';
     case ('heat'):
-      cssString = 'brightness(' + (1 + 2 * effectLevel / 100) + ')';
-      break;
+      return 'brightness(' + (1 + 2 * effectLevel / 100) + ')';
   }
-  return cssString;
+  return '';
 };
 
 var applyEffectLevel = function () {
@@ -592,12 +607,63 @@ var initHashtags = function () {
   });
 };
 
+var clearHashtags = function () {
+  var hashtagsInput = document.querySelector('.text__hashtags');
+  hashtagsInput.setCustomValidity('');
+  hashtagsInput.value = '';
+};
+
+// комментарий
+var checkCommentValidity = function () {
+  var userDescription = document.querySelector('.text__description');
+
+  if (userDescription.value.length > 140) {
+    userDescription.setCustomValidity('длина комментария не может составлять больше 140 символов');
+  } else {
+    userDescription.setCustomValidity('');
+  }
+};
+
+var initComment = function () {
+  var userDescription = document.querySelector('.text__description');
+
+  userDescription.addEventListener('focus', function () {
+    document.removeEventListener('keydown', onEditWindowEscKeydown);
+  });
+  userDescription.addEventListener('blur', function () {
+    document.addEventListener('keydown', onEditWindowEscKeydown);
+  });
+
+  userDescription.addEventListener('change', function () {
+    checkCommentValidity();
+  });
+  userDescription.addEventListener('input', function (evt) {
+    if (evt.target.value.length <= 140) {
+      evt.target.setCustomValidity('');
+    }
+  });
+};
+
+var clearComment = function () {
+  var userDescription = document.querySelector('.text__description');
+  userDescription.setCustomValidity('');
+  userDescription.value = '';
+};
+
 // окно редактирования
 var addEditImageProcessing = function () {
   initSizeControls();
   initSlider();
   initFilter();
   initHashtags();
+  initComment();
+};
+
+var resetEditImage = function () {
+  resetSizeControls();
+  resetFilter();
+  clearHashtags();
+  clearComment();
 };
 
 // ----------------------------------------------
@@ -607,3 +673,4 @@ var mocks = makeMocks();
 showPictures(mocks);
 showFullScreenPicture();
 addUploadProcessing();
+addEditImageProcessing();
