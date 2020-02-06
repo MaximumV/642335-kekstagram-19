@@ -21,6 +21,7 @@ var MAX_SIZE = 100;
 var DEFAULT_SLIDER_LEVEL = 100;
 var MAX_HASHTAGS_COUNT = 5;
 var MAX_HASHTAG_LENGTH = 20;
+var MAX_COMMENT_LENGTH = 140;
 
 var MESSAGES = [
   'Всё отлично!',
@@ -543,6 +544,7 @@ var applyEffectLevel = function () {
 var checkHashtagsValidity = function () {
   var hashtagsInput = document.querySelector('.text__hashtags');
   hashtagsInput.setCustomValidity('');
+  hashtagsInput.value = makeSpaced('#', hashtagsInput.value);
 
   // разделяет строку на отдельные слова
   var tags = hashtagsInput.value.split(' ');
@@ -579,12 +581,18 @@ var checkHashtagsValidity = function () {
 };
 
 var makeSpaced = function (mark, text) {
-  if (text.length > 0) {
-    if (text.slice(-2, -1) !== ' ') {
-      text = text.slice(0, -1) + ' ' + mark;
+  if (text.length === 0) {
+    return '';
+  }
+  var textResult = text[0];
+  for (var i = 1; i < text.length; i++) {
+    if (text[i] === mark) {
+      textResult += (text[i - 1] === ' ') ? mark : ' ' + mark;
+    } else {
+      textResult += text[i];
     }
   }
-  return text;
+  return textResult;
 };
 
 var initHashtags = function () {
@@ -593,7 +601,8 @@ var initHashtags = function () {
   hashtagsInput.addEventListener('focus', function () {
     document.removeEventListener('keydown', onEditWindowEscKeydown);
   });
-  hashtagsInput.addEventListener('blur', function () {
+  hashtagsInput.addEventListener('blur', function (evt) {
+    evt.target.value = makeSpaced('#', evt.target.value);
     document.addEventListener('keydown', onEditWindowEscKeydown);
   });
   hashtagsInput.addEventListener('change', function () {
@@ -617,8 +626,8 @@ var clearHashtags = function () {
 var checkCommentValidity = function () {
   var userDescription = document.querySelector('.text__description');
 
-  if (userDescription.value.length > 140) {
-    userDescription.setCustomValidity('длина комментария не может составлять больше 140 символов');
+  if (userDescription.value.length > MAX_COMMENT_LENGTH) {
+    userDescription.setCustomValidity('длина комментария не может составлять больше ' + MAX_COMMENT_LENGTH + ' символов');
   } else {
     userDescription.setCustomValidity('');
   }
@@ -638,7 +647,7 @@ var initComment = function () {
     checkCommentValidity();
   });
   userDescription.addEventListener('input', function (evt) {
-    if (evt.target.value.length <= 140) {
+    if (evt.target.value.length <= MAX_COMMENT_LENGTH) {
       evt.target.setCustomValidity('');
     }
   });
