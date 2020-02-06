@@ -544,6 +544,7 @@ var applyEffectLevel = function () {
 var checkHashtagsValidity = function () {
   var hashtagsInput = document.querySelector('.text__hashtags');
   hashtagsInput.setCustomValidity('');
+  hashtagsInput.value = makeSpaced('#', hashtagsInput.value);
 
   // разделяет строку на отдельные слова
   var tags = hashtagsInput.value.split(' ');
@@ -580,12 +581,18 @@ var checkHashtagsValidity = function () {
 };
 
 var makeSpaced = function (mark, text) {
-  if (text.length > 0) {
-    if (text.slice(-2, -1) !== ' ') {
-      text = text.slice(0, -1) + ' ' + mark;
+  if (text.length === 0) {
+    return '';
+  }
+  var textResult = text[0];
+  for (var i = 1; i < text.length; i++) {
+    if (text[i] === mark) {
+      textResult += (text[i - 1] === ' ') ? mark : ' ' + mark;
+    } else {
+      textResult += text[i];
     }
   }
-  return text;
+  return textResult;
 };
 
 var initHashtags = function () {
@@ -594,7 +601,8 @@ var initHashtags = function () {
   hashtagsInput.addEventListener('focus', function () {
     document.removeEventListener('keydown', onEditWindowEscKeydown);
   });
-  hashtagsInput.addEventListener('blur', function () {
+  hashtagsInput.addEventListener('blur', function (evt) {
+    evt.target.value = makeSpaced('#', evt.target.value);
     document.addEventListener('keydown', onEditWindowEscKeydown);
   });
   hashtagsInput.addEventListener('change', function () {
