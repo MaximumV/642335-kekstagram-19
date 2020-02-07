@@ -557,27 +557,31 @@ var checkHashtagsValidity = function () {
     return;
   }
 
+  tags.forEach(function (tag) {
+    if (tag[0] !== '#') {
+      hashtagsInput.setCustomValidity('Хэш-тег должен начинаться с символа #');
+      return;
+    }
+    if (tag === '#') {
+      hashtagsInput.setCustomValidity('Хэш-тег не может состоять только из одной решётки');
+      return;
+    }
+    if (tag.length > MAX_HASHTAG_LENGTH) {
+      hashtagsInput.setCustomValidity('Максимальная длина  хэш-тега ' + MAX_HASHTAG_LENGTH + ' символов');
+      return;
+    }
+    if (!tag.match(/^#[0-9a-zA-Zа-яА-Я]+$/)) {
+      hashtagsInput.setCustomValidity('Строка после решётки должна состоять из букв и чисел');
+      return;
+    }
+  });
+
   // уникальные
   if (!isArrayUnique(tags.map(function (item) {
     return item.toUpperCase();
   }))) {
     hashtagsInput.setCustomValidity('Один и тот же хэш-тег не может быть использован дважды');
-    return;
   }
-
-  tags.forEach(function (tag) {
-    if (tag[0] !== '#') {
-      hashtagsInput.setCustomValidity('Хэш-тег должен начинаться с символа #');
-    } else if (tag === '#') {
-      hashtagsInput.setCustomValidity('Хэш-тег не может состоять только из одной решётки');
-    } else if (tag.length > MAX_HASHTAG_LENGTH) {
-      hashtagsInput.setCustomValidity('Максимальная длина  хэш-тега ' + MAX_HASHTAG_LENGTH + ' символов');
-    } else if (!tag.match(/^#[0-9a-zA-Zа-яА-Я]+$/)) {
-      hashtagsInput.setCustomValidity('Строка после решётки должна состоять из букв и чисел');
-    } else {
-      hashtagsInput.setCustomValidity('');
-    }
-  });
 };
 
 var makeSpaced = function (mark, text) {
