@@ -175,12 +175,7 @@ var onPicturesContainerClick = function (evt) {
   || evt.target.matches('.picture [class^="picture__"]')) {
     // элемент img
     var pictureClicked = evt.target.closest('.pictures .picture').firstElementChild;
-    // номер картинки из названия файла
-    var pictureFileName = pictureClicked.src.match(/\d{1,2}\.jpg$/);
-    var number = parseInt(pictureFileName, 10);
-    var pictureNumber = !isNaN(number) ? +number : 1;
-
-    showFullScreenPicture(mocks[pictureNumber - 1]);
+    showFullScreenPicture(pictureClicked);
   }
 // ........................................
 };
@@ -228,20 +223,25 @@ var showCommentsList = function (comments) {
   commentsListElement.appendChild(fragment);
 };
 
-var showFullScreenPicture = function (mock) {
-  if (!mock) {
-    return; /* чтобы линтер не ругался */
-  }
+var showFullScreenPicture = function (pictureClicked) {
   var bigPictureElement = document.querySelector('.big-picture');
-
   var imgElement = bigPictureElement.querySelector('.big-picture__img img');
   var headerElement = bigPictureElement.querySelector('.social__header');
   var captionElement = headerElement.querySelector('.social__caption');
   var likesElement = headerElement.querySelector('.social__likes .likes-count');
+  var newCommentInput = bigPictureElement.querySelector('.social__footer-text');
+  var cancelButton = bigPictureElement.querySelector('#picture-cancel');
+
+  // номер картинки из названия файла
+  var pictureFileName = pictureClicked.src.match(/\d{1,2}\.jpg$/);
+  var number = parseInt(pictureFileName, 10);
+  var pictureNumber = !isNaN(number) ? +number : 1;
+  var mock = mocks[pictureNumber - 1];
 
   // заполняет информацию о фото в разметке
   imgElement.src = mock.url;
   captionElement.textContent = mock.description;
+  imgElement.alt = mock.description;
   likesElement.textContent = mock.likes;
 
   showCommentsList(mock.comments);
@@ -260,16 +260,49 @@ var showFullScreenPicture = function (mock) {
   var commentsCountElement = commentsCountContainerElement.querySelector('.comments-count');
   commentsCountElement.textContent = mock.comments.length;
 
-  document.querySelector('body').classList.add('modal-open');
-  bigPictureElement.classList.remove('hidden');
-  // ........................................
-  var cancelButton = bigPictureElement.querySelector('#picture-cancel');
-  cancelButton.addEventListener('click', function () {
-    bigPictureElement.classList.add('hidden');
+  showModal(bigPictureElement, cancelButton, resetFullPictureWindow);
+  newCommentInput.focus();
+};
+
+
+var resetFullPictureWindow = function () {
+  var bigPictureElement = document.querySelector('.big-picture');
+  var newCommentInput = bigPictureElement.querySelector('.social__footer-text');
+  newCommentInput.value = '';
+};
+
+var showModal = function (modalWindow, cancelButton, resetModalWindow) {
+  var closeModal = function () {
+    modalWindow.classList.add('hidden');
     document.querySelector('body').classList.remove('modal-open');
-  });
-  // cancelButton.addEventListener('keydown', onCancelButtonEnterKeydown);
-  // ........................................
+    document.removeEventListener('keydown', onModalWindowEscKeydown);
+    cancelButton.removeEventListener('click', onCancelButtonClick);
+    cancelButton.removeEventListener('keydown', onCancelButtonEnterKeydown);
+    resetModalWindow();
+  };
+
+  var onModalWindowEscKeydown = function (evt) {
+    if (evt.key === ESC_KEY) {
+      closeModal();
+    }
+  };
+
+  var onCancelButtonEnterKeydown = function (evt) {
+    if (evt.key === ENTER_KEY) {
+      closeModal();
+    }
+  };
+
+  var onCancelButtonClick = function () {
+    closeModal();
+  };
+
+  document.querySelector('body').classList.add('modal-open');
+  modalWindow.classList.remove('hidden');
+
+  cancelButton.addEventListener('click', onCancelButtonClick);
+  cancelButton.addEventListener('keydown', onCancelButtonEnterKeydown);
+  document.addEventListener('keydown', onModalWindowEscKeydown);
 };
 
 // ----------------------------------------------
@@ -451,6 +484,7 @@ var onSliderMouseup = function (evt) {
   }
   var sliderElement = document.querySelector('.effect-level');
   var sliderLine = sliderElement.querySelector('.effect-level__line');
+  sliderElement.style.cursor = 'grabbing';
 
   var sliderWidth = sliderElement.offsetWidth;
   var lineWidth = sliderLine.offsetWidth;
@@ -470,7 +504,10 @@ var onSliderMouseup = function (evt) {
 
 var initSlider = function () {
   var sliderElement = document.querySelector('.effect-level');
+  var sliderPin = sliderElement.querySelector('.effect-level__pin');
+
   sliderElement.addEventListener('mouseup', onSliderMouseup);
+  sliderPin.style.cursor = 'grab';
 };
 
 // эффекты
@@ -684,6 +721,5 @@ var resetEditImage = function () {
 // ----------------------------------------------
 var mocks = makeMocks();
 showPictures(mocks);
-showFullScreenPicture();
 addUploadProcessing();
 addEditImageProcessing();
