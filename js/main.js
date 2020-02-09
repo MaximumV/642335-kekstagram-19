@@ -103,7 +103,7 @@ var isArrayUnique = function (array) {
 // ----------------------------------------------
 var makeComment = function () {
   var comment = {};
-  comment.avatar = 'img/avatar-' + getRandomNumber(1, AVATARS_COUNT - 1) + '.svg';
+  comment.avatar = 'img/avatar-' + getRandomNumber(1, AVATARS_COUNT) + '.svg';
   comment.name = getRandomArrayElement(NAMES);
   comment.message = getRandomArrayElement(MESSAGES);
   if (getRandomBoolean()) {
@@ -260,55 +260,25 @@ var showFullScreenPicture = function (pictureClicked) {
   var commentsCountElement = commentsCountContainerElement.querySelector('.comments-count');
   commentsCountElement.textContent = mock.comments.length;
 
-  showModal(bigPictureElement, cancelButton, mock, resetFullPictureWindow);
+  showModal(bigPictureElement, cancelButton, resetFullPictureWindow);
   newCommentInput.focus();
-  newCommentInput.addEventListener('change', onNewCommentInputChange);
-  newCommentInput.addEventListener('input', onNewCommentInputChange);
 };
 
-var checkNewComment = function (testText) {
-  // проверки только для примера
-  var checkResult = [];
-  if (testText.length > 50) {
-    checkResult.push('Длина не может составлять больше ' + 50 + ' символов.');
-  }
-  if (/<\w+.*?>.*?<\/\w+>/.test(testText)) {
-    checkResult.push('Не нужно вводить что-то, похожее на разметку.');
-  }
-  if (/[@#$%^&]{3,}/.test(testText)) {
-    checkResult.push('Не ругайтесь, пожалуйста.');
-  }
-  return checkResult.join('\n\n');
-};
 
-var onNewCommentInputChange = function (evt) {
-  evt.target.setCustomValidity('');
-  evt.target.setCustomValidity(checkNewComment(evt.target.value));
-  evt.target.reportValidity();
-};
-
-var resetFullPictureWindow = function (/* mock */) {
+var resetFullPictureWindow = function () {
   var bigPictureElement = document.querySelector('.big-picture');
   var newCommentInput = bigPictureElement.querySelector('.social__footer-text');
   newCommentInput.value = '';
-  newCommentInput.removeEventListener('input', onNewCommentInputChange);
-  newCommentInput.removeEventListener('change', onNewCommentInputChange);
-  //
-  // console.group();
-  // console.log(mock.url);
-  // console.log(mock.description);
-  // console.log(bigPictureElement.querySelector('img').alt);
-  // console.groupEnd();
 };
 
-var showModal = function (modalWindow, cancelButton, data, resetModalWindow) {
+var showModal = function (modalWindow, cancelButton, resetModalWindow) {
   var closeModal = function () {
     modalWindow.classList.add('hidden');
     document.querySelector('body').classList.remove('modal-open');
     document.removeEventListener('keydown', onModalWindowEscKeydown);
     cancelButton.removeEventListener('click', onCancelButtonClick);
     cancelButton.removeEventListener('keydown', onCancelButtonEnterKeydown);
-    resetModalWindow(data);
+    resetModalWindow();
   };
 
   var onModalWindowEscKeydown = function (evt) {
