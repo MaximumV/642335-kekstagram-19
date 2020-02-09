@@ -262,10 +262,37 @@ var showFullScreenPicture = function (pictureClicked) {
 
   showModal(bigPictureElement, cancelButton, mock, resetFullPictureWindow);
   newCommentInput.focus();
+  newCommentInput.addEventListener('change', onNewCommentInputChange);
+  newCommentInput.addEventListener('input', onNewCommentInputChange);
+};
+
+var checkNewComment = function (testText) {
+  // проверки только для примера
+  var checkResult = [];
+  if (testText.length > 50) {
+    checkResult.push('Длина не может составлять больше ' + 50 + ' символов.');
+  }
+  if (/<\w+.*?>.*?<\/\w+>/.test(testText)) {
+    checkResult.push('Не нужно вводить что-то, похожее на разметку.');
+  }
+  if (/[@#$%^&]{3,}/.test(testText)) {
+    checkResult.push('Не ругайтесь, пожалуйста.');
+  }
+  return checkResult.join('\n\n');
+};
+
+var onNewCommentInputChange = function (evt) {
+  evt.target.setCustomValidity('');
+  evt.target.setCustomValidity(checkNewComment(evt.target.value));
+  evt.target.reportValidity();
 };
 
 var resetFullPictureWindow = function (/* mock */) {
-  // var bigPictureElement = document.querySelector('.big-picture');
+  var bigPictureElement = document.querySelector('.big-picture');
+  var newCommentInput = bigPictureElement.querySelector('.social__footer-text');
+  newCommentInput.value = '';
+  newCommentInput.removeEventListener('input', onNewCommentInputChange);
+  newCommentInput.removeEventListener('change', onNewCommentInputChange);
   //
   // console.group();
   // console.log(mock.url);
