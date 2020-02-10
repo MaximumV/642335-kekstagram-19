@@ -4,10 +4,6 @@
 
   var DEFAULT_PHOTO = 'img/upload-default-image.jpg';
 
-  var SIZE_SCALE_INTERVAL = 25;
-  var DEFAULT_SIZE = 100;
-  var MIN_SIZE = 25;
-  var MAX_SIZE = 100;
   var DEFAULT_SLIDER_LEVEL = 100;
   var MAX_HASHTAGS_COUNT = 5;
   var MAX_HASHTAG_LENGTH = 20;
@@ -91,55 +87,8 @@
   // ----------------------------------------------
 
   // масштабирование
-  var setSize = function (size) {
-    var sizeControls = document.querySelector('.img-upload__scale');
-    var sizeIndicator = sizeControls.querySelector('.scale__control--value');
-
-    sizeIndicator.value = size + '%';
+  var zoomPicture = function (size) {
     imageElement.style.transform = 'scale(' + size / 100 + ')';
-  };
-
-  var incrementSize = function () {
-    var sizeControls = document.querySelector('.img-upload__scale');
-    var sizeIndicator = sizeControls.querySelector('.scale__control--value');
-    var size = parseInt(sizeIndicator.value, 10);
-
-    size = size + SIZE_SCALE_INTERVAL;
-    if (size > MAX_SIZE) {
-      size = MAX_SIZE;
-    }
-    setSize(size);
-  };
-
-  var decrementSize = function () {
-    var sizeControls = document.querySelector('.img-upload__scale');
-    var sizeIndicator = sizeControls.querySelector('.scale__control--value');
-    var size = parseInt(sizeIndicator.value, 10);
-
-    size = size - SIZE_SCALE_INTERVAL;
-    if (size < MIN_SIZE) {
-      size = MIN_SIZE;
-    }
-    setSize(size);
-  };
-
-  var initSizeControls = function () {
-    var sizeControls = document.querySelector('.img-upload__scale');
-    var sizeDecControl = sizeControls.querySelector('.scale__control--smaller');
-    var sizeIncControl = sizeControls.querySelector('.scale__control--bigger');
-
-    sizeDecControl.addEventListener('click', function () {
-      decrementSize();
-    });
-    sizeIncControl.addEventListener('click', function () {
-      incrementSize();
-    });
-
-    resetSizeControls();
-  };
-
-  var resetSizeControls = function () {
-    setSize(DEFAULT_SIZE);
   };
 
   // слайдер
@@ -413,7 +362,7 @@
 
   // окно редактирования
   var addEditImageProcessing = function () {
-    initSizeControls();
+    window.sizer.init(zoomPicture);
     initSlider();
     initFilter();
     initHashtags();
@@ -421,7 +370,7 @@
   };
 
   var resetEditImage = function () {
-    resetSizeControls();
+    window.sizer.reset();
     resetFilter();
     clearHashtags();
     clearComment();
