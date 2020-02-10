@@ -8,12 +8,13 @@
   var MAX_HASHTAG_LENGTH = 20;
   var MAX_COMMENT_LENGTH = 140;
 
-  var editWindow = document.querySelector('.img-upload__overlay');
   var uploadForm = document.querySelector('#upload-select-image');
+  var resetButton = uploadForm.querySelector('#upload-cancel');
+  var editWindow = document.querySelector('.img-upload__overlay');
   var imageElement = document.querySelector('.img-upload__preview img');
 
   // ----------------------------------------------
-  // загрузка изображения
+  // загрузка изображения и показ формы
   // ----------------------------------------------
   // пока загружает фото только из из папки проекта
   var getUploadFileName = function () {
@@ -36,37 +37,19 @@
 
     resetEditImage();
 
-    document.addEventListener('keydown', onEditWindowEscKeydown);
-    editWindow.classList.remove('hidden');
-    document.querySelector('body').classList.add('modal-open');
+    window.modal.show(editWindow, resetButton, function () {
+      resetEditImage();
+      resetUploadForm();
+    });
   };
 
-  var closeUploadForm = function () {
+  var resetUploadForm = function () {
     var uploadFileInput = document.querySelector('#upload-file');
-
-    document.querySelector('body').classList.remove('modal-open');
-    editWindow.classList.add('hidden');
     uploadFileInput.value = '';
-    document.removeEventListener('keydown', onEditWindowEscKeydown);
-  };
-
-  var onEditWindowEscKeydown = function (evt) {
-    window.util.isEscEvent(evt, function () {
-      resetEditImage();
-      closeUploadForm();
-    });
-  };
-
-  var onResetButtonEnterKeydown = function (evt) {
-    window.util.isEnterEvent(evt, function () {
-      resetEditImage();
-      closeUploadForm();
-    });
   };
 
   var addUploadProcessing = function () {
     var uploadFileInput = document.querySelector('#upload-file');
-    var resetButton = uploadForm.querySelector('#upload-cancel');
 
     uploadForm.action = 'https://js.dump.academy/kekstagram';
     uploadFileInput.accept = 'image/*';
@@ -75,10 +58,20 @@
     uploadFileInput.addEventListener('change', function () {
       showEditWindow();
     });
-    resetButton.addEventListener('click', function () {
-      closeUploadForm();
-    });
-    resetButton.addEventListener('keydown', onResetButtonEnterKeydown);
+  };
+
+  var addEditImageProcessing = function () {
+    window.sizer.init(zoomPicture);
+    initFilter();
+    initHashtags();
+    initComment();
+  };
+
+  var resetEditImage = function () {
+    window.sizer.reset();
+    resetFilter();
+    clearHashtags();
+    clearComment();
   };
 
   // ----------------------------------------------
@@ -230,11 +223,11 @@
     var hashtagsInput = document.querySelector('.text__hashtags');
 
     hashtagsInput.addEventListener('focus', function () {
-      document.removeEventListener('keydown', onEditWindowEscKeydown);
+      // document.removeEventListener('keydown', onEditWindowEscKeydown);
     });
     hashtagsInput.addEventListener('blur', function (evt) {
       evt.target.value = makeSpaced('#', evt.target.value);
-      document.addEventListener('keydown', onEditWindowEscKeydown);
+      // document.addEventListener('keydown', onEditWindowEscKeydown);
     });
     hashtagsInput.addEventListener('change', function () {
       checkHashtagsValidity();
@@ -268,10 +261,10 @@
     var userDescription = document.querySelector('.text__description');
 
     userDescription.addEventListener('focus', function () {
-      document.removeEventListener('keydown', onEditWindowEscKeydown);
+      // document.removeEventListener('keydown', onEditWindowEscKeydown);
     });
     userDescription.addEventListener('blur', function () {
-      document.addEventListener('keydown', onEditWindowEscKeydown);
+      // document.addEventListener('keydown', onEditWindowEscKeydown);
     });
 
     userDescription.addEventListener('change', function () {
@@ -290,21 +283,7 @@
     userDescription.value = '';
   };
 
-  // окно редактирования
-  var addEditImageProcessing = function () {
-    window.sizer.init(zoomPicture);
-    initFilter();
-    initHashtags();
-    initComment();
-  };
-
-  var resetEditImage = function () {
-    window.sizer.reset();
-    resetFilter();
-    clearHashtags();
-    clearComment();
-  };
-
+  // ----------------------------------------------
 
   addUploadProcessing();
   addEditImageProcessing();
