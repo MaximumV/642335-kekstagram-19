@@ -4,7 +4,6 @@
 
   var DEFAULT_PHOTO = 'img/upload-default-image.jpg';
 
-  var DEFAULT_SLIDER_LEVEL = 100;
   var MAX_HASHTAGS_COUNT = 5;
   var MAX_HASHTAG_LENGTH = 20;
   var MAX_COMMENT_LENGTH = 140;
@@ -91,82 +90,7 @@
     imageElement.style.transform = 'scale(' + size / 100 + ')';
   };
 
-  // слайдер
-  var getSliderLevel = function () {
-    var sliderElement = document.querySelector('.effect-level');
-    var sliderValue = sliderElement.querySelector('.effect-level__value');
-    return sliderValue.value;
-  };
-
-  var setSliderLevel = function (level) {
-    var sliderElement = document.querySelector('.effect-level');
-    var sliderPin = sliderElement.querySelector('.effect-level__pin');
-    var sliderDepth = sliderElement.querySelector('.effect-level__depth');
-    var sliderValue = sliderElement.querySelector('.effect-level__value');
-
-    sliderValue.value = level;
-    sliderPin.style.left = level + '%';
-    sliderDepth.style.width = level + '%';
-    applyEffectLevel();
-  };
-
-  var showSlider = function () {
-    var sliderElement = document.querySelector('.effect-level');
-    sliderElement.classList.remove('hidden');
-  };
-
-  var hideSlider = function () {
-    var sliderElement = document.querySelector('.effect-level');
-    sliderElement.classList.add('hidden');
-  };
-
-  var resetSlider = function () {
-    setSliderLevel(DEFAULT_SLIDER_LEVEL);
-    var effect = getCurrentEffect();
-    if (effect === 'none') {
-      hideSlider();
-    } else {
-      showSlider();
-    }
-  };
-
-  var onSliderMouseup = function (evt) {
-    if (evt.button !== 0) {
-      return;
-    }
-    if (evt.target.classList.contains('effect-level__pin')) {
-      // клик на сам ползунок - здесь ничего не перемещаем
-      return;
-    }
-    var sliderElement = document.querySelector('.effect-level');
-    var sliderLine = sliderElement.querySelector('.effect-level__line');
-    sliderElement.style.cursor = 'grabbing';
-
-    var sliderWidth = sliderElement.offsetWidth;
-    var lineWidth = sliderLine.offsetWidth;
-    var sliderMargin = (sliderWidth - lineWidth) / 2;
-    var posX = evt.offsetX;
-    var sliderLevel = 0;
-
-    if (evt.target === evt.currentTarget) {
-      // клик снаружи линии - вычитаем поля
-      posX = posX < sliderMargin ? 0 : posX - sliderMargin;
-      posX = posX < lineWidth ? posX : lineWidth;
-    }
-
-    sliderLevel = Math.round(posX / lineWidth * 100);
-    setSliderLevel(sliderLevel);
-  };
-
-  var initSlider = function () {
-    var sliderElement = document.querySelector('.effect-level');
-    var sliderPin = sliderElement.querySelector('.effect-level__pin');
-
-    sliderElement.addEventListener('mouseup', onSliderMouseup);
-    sliderPin.style.cursor = 'grab';
-  };
-
-  // эффекты
+  // эффекты и слайдер
   var getCurrentEffect = function () {
     var effectsRadioNodeList = uploadForm.effect;
 
@@ -183,12 +107,14 @@
         imageElement.classList.remove(className);
       }
     });
-    resetSlider();
+    var isSliderVisible = (effect === 'none') ? false : true;
+    window.slider.reset(isSliderVisible);
     imageElement.classList.add('effects__preview--' + effect);
   };
 
   var initFilter = function () {
     var effectsContainer = document.querySelector('.effects');
+    window.slider.init(applyEffectLevel);
 
     effectsContainer.addEventListener('change', function () {
       applyFilter(getCurrentEffect());
@@ -201,7 +127,6 @@
     applyFilter('none');
   };
 
-  // применить фильтры и уровень слайдера к картинке
   var getFilterStyleString = function (effect, effectLevel) {
     switch (effect) {
       case ('none'):
@@ -220,13 +145,18 @@
     return '';
   };
 
+  // применить фильтры и уровень слайдера к картинке
   var applyEffectLevel = function () {
     // применяет текушие значенияк контролов к картинке
     var effect = getCurrentEffect();
-    var level = getSliderLevel();
+    var level = window.slider.get();
 
     imageElement.style.filter = getFilterStyleString(effect, level);
   };
+
+  // ----------------------------------------------
+  // текстовые поля
+  // ----------------------------------------------
 
   // хэштеги
   var checkHashtagsValidity = function () {
@@ -363,7 +293,6 @@
   // окно редактирования
   var addEditImageProcessing = function () {
     window.sizer.init(zoomPicture);
-    initSlider();
     initFilter();
     initHashtags();
     initComment();
