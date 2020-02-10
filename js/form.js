@@ -223,11 +223,11 @@
     var hashtagsInput = document.querySelector('.text__hashtags');
 
     hashtagsInput.addEventListener('focus', function () {
-      // document.removeEventListener('keydown', onEditWindowEscKeydown);
+      window.modal.mustCloseByEsc(false);
     });
     hashtagsInput.addEventListener('blur', function (evt) {
       evt.target.value = makeSpaced('#', evt.target.value);
-      // document.addEventListener('keydown', onEditWindowEscKeydown);
+      window.modal.mustCloseByEsc(true);
     });
     hashtagsInput.addEventListener('change', function () {
       checkHashtagsValidity();
@@ -261,10 +261,10 @@
     var userDescription = document.querySelector('.text__description');
 
     userDescription.addEventListener('focus', function () {
-      // document.removeEventListener('keydown', onEditWindowEscKeydown);
+      window.modal.mustCloseByEsc(false);
     });
     userDescription.addEventListener('blur', function () {
-      // document.addEventListener('keydown', onEditWindowEscKeydown);
+      window.modal.mustCloseByEsc(true);
     });
 
     userDescription.addEventListener('change', function () {
