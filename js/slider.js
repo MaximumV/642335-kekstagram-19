@@ -27,36 +27,41 @@
     applySlider(level);
   };
 
-  var onSliderMouseup = function (evt) {
+  var onSliderPinMousedown = function (evt) {
     if (evt.button !== 0) {
       return;
     }
-    if (evt.target.classList.contains('effect-level__pin')) {
-      // клик на сам ползунок - здесь ничего не перемещаем
-      return;
-    }
+    evt.preventDefault();
+    sliderPin.style.cursor = 'grabbing';
 
-    sliderElement.style.cursor = 'grabbing';
-
-    var sliderWidth = sliderElement.offsetWidth;
     var lineWidth = sliderLine.offsetWidth;
-    var sliderMargin = (sliderWidth - lineWidth) / 2;
-    var posX = evt.offsetX;
-    var sliderLevel = 0;
+    var lineLeft = sliderLine.getBoundingClientRect().x;
 
-    if (evt.target === evt.currentTarget) {
-      // клик снаружи линии - вычитаем поля
-      posX = posX < sliderMargin ? 0 : posX - sliderMargin;
-      posX = posX < lineWidth ? posX : lineWidth;
-    }
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+      document.body.style.cursor = 'grabbing';
+      var pinPosition = (moveEvt.clientX < lineLeft) ? 0 : moveEvt.clientX - lineLeft;
+      var sliderLevel = Math.round((pinPosition) / lineWidth * 100);
+      sliderLevel = (sliderLevel < 100) ? sliderLevel : 100;
+      setSliderLevel(sliderLevel);
+    };
 
-    sliderLevel = Math.round(posX / lineWidth * 100);
-    setSliderLevel(sliderLevel);
+    var onMouseUp = function (moveEvt) {
+      moveEvt.preventDefault();
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+      document.body.style.cursor = 'default';
+      sliderPin.style.cursor = 'grab';
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
   };
+
 
   var initSlider = function (callbackApplySlider) {
     applySlider = callbackApplySlider;
-    sliderElement.addEventListener('mouseup', onSliderMouseup);
+    sliderPin.addEventListener('mousedown', onSliderPinMousedown);
     sliderPin.style.cursor = 'grab';
   };
 
