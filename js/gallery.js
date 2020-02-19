@@ -2,7 +2,7 @@
 
 (function () {
 
-  var show = function (mocks) {
+  window.show = function (mocks) {
     var containerElement = document.querySelector('.pictures.container');
     var fragment = document.createDocumentFragment();
 
@@ -22,7 +22,4 @@
       window.preview.show(pictureClicked);
     }
   };
-
-
-  show(window.mocks);
 })();
