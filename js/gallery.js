@@ -2,12 +2,12 @@
 
 (function () {
 
-  window.show = function (mocks) {
+  window.show = function (picturesData) {
     var containerElement = document.querySelector('.pictures.container');
     var fragment = document.createDocumentFragment();
 
-    mocks.forEach(function (mock) {
-      fragment.appendChild(window.miniPictureCreate(mock));
+    picturesData.forEach(function (pictureData) {
+      fragment.appendChild(window.miniPictureCreate(pictureData));
     });
     containerElement.appendChild(fragment);
     containerElement.addEventListener('click', onPicturesContainerClick);
