@@ -58,15 +58,15 @@
     var pictureFileName = pictureClicked.src.match(/\d{1,2}\.jpg$/);
     var number = parseInt(pictureFileName, 10);
     var pictureNumber = !isNaN(number) ? +number : 1;
-    var mock = window.mocks[pictureNumber - 1];
+    var pictureData = window.picturesData[pictureNumber - 1];
 
     // заполняет информацию о фото в разметке
-    imgElement.src = mock.url;
-    captionElement.textContent = mock.description;
-    imgElement.alt = mock.description;
-    likesElement.textContent = mock.likes;
+    imgElement.src = pictureData.url;
+    captionElement.textContent = pictureData.description;
+    imgElement.alt = pictureData.description;
+    likesElement.textContent = pictureData.likes;
 
-    showCommentsList(mock.comments);
+    showCommentsList(pictureData.comments);
 
     // скрывает кнопку загрузки новых комментариев
     var commentsLoaderButton = bigPictureElement.querySelector('.comments-loader');
@@ -77,10 +77,10 @@
     commentsCountContainerElement.classList.add('hidden');
 
     // показывает количество комментариев
-    var commentsTotal = Math.min(mock.comments.length, COMMENTS_TO_SHOW);
+    var commentsTotal = Math.min(pictureData.comments.length, COMMENTS_TO_SHOW);
     commentsCountContainerElement.firstChild.textContent = commentsTotal + ' из ';
     var commentsCountElement = commentsCountContainerElement.querySelector('.comments-count');
-    commentsCountElement.textContent = mock.comments.length;
+    commentsCountElement.textContent = pictureData.comments.length;
 
     window.modal.show(bigPictureElement, cancelButton, resetFullPictureWindow);
     newCommentInput.focus();
