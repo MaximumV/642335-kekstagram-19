@@ -62,7 +62,9 @@
   };
 
   window.modal = {
+    isModalOpen: isModalOpen,
     show: showModal,
+    close: closeModal,
     mustCloseByEsc: mustCloseByEsc
   };
 

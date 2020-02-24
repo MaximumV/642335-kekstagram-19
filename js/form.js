@@ -48,6 +48,17 @@
     uploadFileInput.value = '';
   };
 
+  var onFormSubmit = function (evt) {
+    evt.preventDefault();
+    window.backend.send(new FormData(uploadForm), function onSuccessCase() {
+      window.modal.close();
+      window.message.showSuccess();
+    }, function onErrorCase() {
+      window.modal.close();
+      window.message.showError();
+    });
+  };
+
   var addUploadProcessing = function () {
     var uploadFileInput = document.querySelector('#upload-file');
 
@@ -58,6 +69,7 @@
     uploadFileInput.addEventListener('change', function () {
       showEditWindow();
     });
+    uploadForm.addEventListener('submit', onFormSubmit);
   };
 
   var addEditImageProcessing = function () {
