@@ -75,14 +75,17 @@
           outputData += field + '=' + JSON.stringify(formData[field]) + ';  ';
         }
       }
-      window.util.removeErrorMessage();
-      window.util.renderErrorMessage('Отправленные данные: ' + outputData);
-      window.util.renderErrorMessage('Значения в форме: ' + getFormValue());
+      // window.util.removeErrorMessage();
+      // window.util.renderErrorMessage('Отправленные данные: ' + outputData);
+      // window.util.renderErrorMessage('Значения в форме: ' + getFormValue());
       window.modal.close();
-      window.util.renderErrorMessage('Форма закрыта: ' + getFormValue());
+      // window.util.renderErrorMessage('Форма закрыта: ' + getFormValue());
+      window.message.showSuccess();
     }, function onErrorCase(response) {
-      window.util.removeErrorMessage();
-      window.util.renderErrorMessage('Ошибка отправки формы: ' + response);
+      // window.util.removeErrorMessage();
+      // window.util.renderErrorMessage('Ошибка отправки формы: ' + response);
+      window.modal.close();
+      window.message.showError();
     });
   };
 

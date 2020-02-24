@@ -19,6 +19,9 @@
     },
 
     renderErrorMessage: function (errorMessage) {
+      if (window.modal.isModalOpen()) {
+        return;
+      }
       var container = document.querySelector('main');
       var element = document.createElement('p');
       element.className = 'backend-error';
