@@ -63,6 +63,7 @@
 
   window.modal = {
     show: showModal,
+    close: closeModal,
     mustCloseByEsc: mustCloseByEsc
   };
 

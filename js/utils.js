@@ -24,7 +24,7 @@
       element.className = 'backend-error';
       element.style = 'margin: 0.2em 1em; padding: 1em; left:0; right: 0; '
       + 'border-top: 1px solid #fff; color: #ffe753; background-color: #3c3614; '
-      + 'text-align: center; position: absolute; z-index: 3; height: 4em; '
+      + 'text-align: center; position: relative; z-index: 3; height: 4em; '
       + 'overflow-y: auto;';
       element.textContent = errorMessage;
       container.prepend(element);
