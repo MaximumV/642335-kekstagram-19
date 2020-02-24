@@ -49,41 +49,11 @@
   };
 
   var onFormSubmit = function (evt) {
-
-    var getFormValue = function () {
-      return Array.from(uploadForm.elements)
-      .filter(function (item) {
-        return item.value && item.name !== 'effect';
-      })
-      .concat({name: 'effect', value: uploadForm.effect.value})
-      .map(function (item) {
-        return (item.name) + '=' + item.value;
-      });
-    };
-
     evt.preventDefault();
-    window.backend.send(new FormData(uploadForm), function onSuccessCase(formData) {
-      var outputData = '';
-
-      // outputData = Object.entries(formData).reduce(function (rest, item) {
-      //   return rest + item.join('=') + ';';
-      // }, '');
-
-      for (var field in formData) {
-        /* guard-for-in */
-        if (Object.prototype.hasOwnProperty.call(formData, field)) {
-          outputData += field + '=' + JSON.stringify(formData[field]) + ';  ';
-        }
-      }
-      // window.util.removeErrorMessage();
-      // window.util.renderErrorMessage('Отправленные данные: ' + outputData);
-      // window.util.renderErrorMessage('Значения в форме: ' + getFormValue());
+    window.backend.send(new FormData(uploadForm), function onSuccessCase() {
       window.modal.close();
-      // window.util.renderErrorMessage('Форма закрыта: ' + getFormValue());
       window.message.showSuccess();
-    }, function onErrorCase(response) {
-      // window.util.removeErrorMessage();
-      // window.util.renderErrorMessage('Ошибка отправки формы: ' + response);
+    }, function onErrorCase() {
       window.modal.close();
       window.message.showError();
     });
