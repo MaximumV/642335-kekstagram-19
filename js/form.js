@@ -48,6 +48,29 @@
     uploadFileInput.value = '';
   };
 
+  var onFormSubmit = function (evt) {
+    evt.preventDefault();
+    window.backend.send(new FormData(uploadForm), function onSuccessCase(formData) {
+      resetUploadForm();
+      var outputData = '';
+
+      // outputData = Object.entries(formData).reduce(function (rest, item) {
+      //   return rest + item.join('=') + ';';
+      // }, '');
+      for (var field in formData) {
+        /* guard-for-in */
+        if (Object.prototype.hasOwnProperty.call(formData, field)) {
+          outputData += field + '=' + JSON.stringify(formData[field]) + ';  ';
+        }
+      }
+      window.util.removeErrorMessage();
+      window.util.renderErrorMessage('Форма отправлена: ' + outputData);
+    }, function onErrorCase(response) {
+      window.util.removeErrorMessage();
+      window.util.renderErrorMessage('Ошибка отправки формы: ' + response);
+    });
+  };
+
   var addUploadProcessing = function () {
     var uploadFileInput = document.querySelector('#upload-file');
 
@@ -58,6 +81,7 @@
     uploadFileInput.addEventListener('change', function () {
       showEditWindow();
     });
+    uploadForm.addEventListener('submit', onFormSubmit);
   };
 
   var addEditImageProcessing = function () {
