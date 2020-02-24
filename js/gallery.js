@@ -2,15 +2,17 @@
 
 (function () {
 
-  window.show = function (picturesData) {
-    var containerElement = document.querySelector('.pictures.container');
-    var fragment = document.createDocumentFragment();
+  window.gallery = {
+    show: function (picturesData) {
+      var containerElement = document.querySelector('.pictures.container');
+      var fragment = document.createDocumentFragment();
 
-    picturesData.forEach(function (pictureData) {
-      fragment.appendChild(window.miniPictureCreate(pictureData));
-    });
-    containerElement.appendChild(fragment);
-    containerElement.addEventListener('click', onPicturesContainerClick);
+      picturesData.forEach(function (pictureData) {
+        fragment.appendChild(window.miniPictureCreate(pictureData));
+      });
+      containerElement.appendChild(fragment);
+      containerElement.addEventListener('click', onPicturesContainerClick);
+    }
   };
 
   var onPicturesContainerClick = function (evt) {
