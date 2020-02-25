@@ -7,6 +7,10 @@
       var containerElement = document.querySelector('.pictures.container');
       var fragment = document.createDocumentFragment();
 
+      containerElement.querySelectorAll('a.picture').forEach(function (miniPicture) {
+        miniPicture.remove();
+      });
+
       picturesData.forEach(function (pictureData) {
         fragment.appendChild(window.miniPictureCreate(pictureData));
       });
