@@ -4,16 +4,19 @@
 
   var COMMENTS_TO_SHOW = 5;
 
+  var outputtedComments = 0; /* количество показанных комментариев */
+  var commentsData = []; /* ссылается на все комментарии с сервера */
+  var isShownAllComments = false;
+
   var bigPictureElement = document.querySelector('.big-picture');
+  var commentsListElement = document.querySelector('.social__comments');
+  var commentsLoaderButton = bigPictureElement.querySelector('.comments-loader');
+  var commentsCountContainerElement = bigPictureElement.querySelector('.social__comment-count');
 
   var getCommentTemplate = function () {
     return (
       '<li class="social__comment">' +
-          '<img ' +
-              'class="social__picture" ' +
-              'src="" ' +
-              'alt="" ' +
-              'width="35" height="35">' +
+          '<img class="social__picture" width="35" height="35">' +
           '<p class="social__text"></p>' +
       '</li>'
     );
@@ -35,15 +38,23 @@
     return commentElement;
   };
 
-  var showCommentsList = function (comments) {
-    var commentsListElement = document.querySelector('.social__comments');
+  var appendComments = function (comments) {
+    // показывает новую порцию комментариев в разметке
     var fragment = document.createDocumentFragment();
-
-    comments.slice(0, COMMENTS_TO_SHOW).forEach(function (comment) {
+    comments.forEach(function (comment) {
       fragment.appendChild(createCommentElement(comment));
     });
-    commentsListElement.innerHTML = '';
     commentsListElement.appendChild(fragment);
+
+    // обновляет количество комментариев
+    outputtedComments += comments.length;
+    isShownAllComments = outputtedComments < commentsData.length ? false : true;
+    commentsCountContainerElement.firstChild.textContent = outputtedComments + ' из ';
+
+    // нужно показывать кнопку загрузки новых комментариев?
+    if (isShownAllComments) {
+      commentsLoaderButton.classList.add('hidden');
+    }
   };
 
   var showFullScreenPicture = function (pictureClicked) {
@@ -53,12 +64,14 @@
     var likesElement = headerElement.querySelector('.social__likes .likes-count');
     var cancelButton = bigPictureElement.querySelector('#picture-cancel');
     var newCommentInput = bigPictureElement.querySelector('.social__footer-text');
+    var commentsCountElement = commentsCountContainerElement.querySelector('.comments-count');
 
-    // номер картинки из названия файла
+    // получает номер картинки из названия файла
     var pictureFileName = pictureClicked.src.match(/\d{1,2}\.jpg$/);
     var number = parseInt(pictureFileName, 10);
     var pictureNumber = !isNaN(number) ? +number : 1;
     var pictureData = window.picturesData[pictureNumber - 1];
+    commentsData = pictureData.comments;
 
     // заполняет информацию о фото в разметке
     imgElement.src = pictureData.url;
@@ -66,29 +79,35 @@
     imgElement.alt = pictureData.description;
     likesElement.textContent = pictureData.likes;
 
-    showCommentsList(pictureData.comments);
+    // очищает список комментариев
+    commentsListElement.innerHTML = '';
+    commentsLoaderButton.classList.remove('hidden');
+    commentsCountElement.textContent = commentsData.length;
+    outputtedComments = 0;
+    isShownAllComments = false;
 
-    // скрывает кнопку загрузки новых комментариев
-    var commentsLoaderButton = bigPictureElement.querySelector('.comments-loader');
-    commentsLoaderButton.classList.add('hidden');
+    appendComments(commentsData.slice(0, COMMENTS_TO_SHOW));
 
-    // скрывает блок счётчика комментариев
-    var commentsCountContainerElement = bigPictureElement.querySelector('.social__comment-count');
-    commentsCountContainerElement.classList.add('hidden');
-
-    // показывает количество комментариев
-    var commentsTotal = Math.min(pictureData.comments.length, COMMENTS_TO_SHOW);
-    commentsCountContainerElement.firstChild.textContent = commentsTotal + ' из ';
-    var commentsCountElement = commentsCountContainerElement.querySelector('.comments-count');
-    commentsCountElement.textContent = pictureData.comments.length;
+    if (!isShownAllComments) {
+      commentsLoaderButton.addEventListener('click', onCommentsLoaderButtonClick);
+    }
 
     window.modal.show(bigPictureElement, cancelButton, resetFullPictureWindow);
+
     newCommentInput.focus();
+    if (!isShownAllComments) {
+      commentsLoaderButton.focus();
+    }
   };
 
   var resetFullPictureWindow = function () {
     var newCommentInput = bigPictureElement.querySelector('.social__footer-text');
     newCommentInput.value = '';
+    commentsLoaderButton.removeEventListener('click', onCommentsLoaderButtonClick);
+  };
+
+  var onCommentsLoaderButtonClick = function () {
+    appendComments(commentsData.slice(outputtedComments, outputtedComments + COMMENTS_TO_SHOW));
   };
 
   window.preview = {
