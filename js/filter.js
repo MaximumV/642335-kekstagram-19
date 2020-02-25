@@ -30,7 +30,12 @@
 
     switch (filter) {
       case filterRandom:
-        window.gallery.show(window.picturesData.slice(0, COUNT_RANDOM_FOTO));
+        window.gallery.show(window.picturesData.slice()
+          .sort(function () {
+            return window.random.getNumber(0, 2) - 1;
+          })
+          .slice(0, COUNT_RANDOM_FOTO)
+        );
         break;
       case filterDiscussed:
         window.gallery.show(window.picturesData.slice()
