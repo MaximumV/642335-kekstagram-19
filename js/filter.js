@@ -15,11 +15,9 @@
     var filters = filtersContainer.querySelectorAll('.img-filters__button');
     filtersContainer.classList.remove('img-filters--inactive');
     setActiveFilter(filterDefault);
-    console.time();
 
     filters.forEach(function (filter) {
       filter.addEventListener('click', function () {
-        console.info(filter.id);
         setActiveFilter(filter);
       });
     });
@@ -29,8 +27,6 @@
     var active = filtersContainer.querySelector('.' + ACTIVE_CLASS);
     active.classList.remove(ACTIVE_CLASS);
     filter.classList.add(ACTIVE_CLASS);
-    console.timeLog();
-    console.log(filter.id);
 
     switch (filter) {
       case filterRandom:
