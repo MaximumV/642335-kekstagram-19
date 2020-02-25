@@ -6,6 +6,7 @@
 
   var outputtedComments = 0; /* количество показанных комментариев */
   var commentsData = []; /* ссылается на все комментарии с сервера */
+  var isShownAllComments = false;
 
   var bigPictureElement = document.querySelector('.big-picture');
   var commentsListElement = document.querySelector('.social__comments');
@@ -47,18 +48,13 @@
 
     // обновляет количество комментариев
     outputtedComments += comments.length;
+    isShownAllComments = outputtedComments < commentsData.length ? false : true;
     commentsCountContainerElement.firstChild.textContent = outputtedComments + ' из ';
 
     // нужно показывать кнопку загрузки новых комментариев?
-    if (isShownAllComments()) {
+    if (isShownAllComments) {
       commentsLoaderButton.classList.add('hidden');
-    } else {
-      commentsLoaderButton.classList.remove('hidden');
     }
-  };
-
-  var isShownAllComments = function () {
-    return !(outputtedComments < commentsData.length);
   };
 
   var showFullScreenPicture = function (pictureClicked) {
@@ -83,22 +79,23 @@
     imgElement.alt = pictureData.description;
     likesElement.textContent = pictureData.likes;
 
-    // очищает разметку списка комментариев
+    // очищает список комментариев
     commentsListElement.innerHTML = '';
-    commentsLoaderButton.classList.add('hidden');
+    commentsLoaderButton.classList.remove('hidden');
     commentsCountElement.textContent = commentsData.length;
+    outputtedComments = 0;
+    isShownAllComments = false;
 
     appendComments(commentsData.slice(0, COMMENTS_TO_SHOW));
 
-    if (!isShownAllComments()) {
+    if (!isShownAllComments) {
       commentsLoaderButton.addEventListener('click', onCommentsLoaderButtonClick);
-      // commentsLoaderButton.addEventListener('keydown', onCommentsLoaderButtonEnterKeydown);
     }
 
     window.modal.show(bigPictureElement, cancelButton, resetFullPictureWindow);
 
     newCommentInput.focus();
-    if (!isShownAllComments()) {
+    if (!isShownAllComments) {
       commentsLoaderButton.focus();
     }
   };
@@ -106,20 +103,12 @@
   var resetFullPictureWindow = function () {
     var newCommentInput = bigPictureElement.querySelector('.social__footer-text');
     newCommentInput.value = '';
-    outputtedComments = 0;
     commentsLoaderButton.removeEventListener('click', onCommentsLoaderButtonClick);
-    // commentsLoaderButton.removeEventListener('keydown', onCommentsLoaderButtonEnterKeydown);
   };
 
   var onCommentsLoaderButtonClick = function () {
     appendComments(commentsData.slice(outputtedComments, outputtedComments + COMMENTS_TO_SHOW));
   };
-
-  // var onCommentsLoaderButtonEnterKeydown = function (evt) {
-  //   window.util.isEnterEvent(evt, function () {
-  //     appendComments(commentsData.slice(outputtedComments + 1, outputtedComments + 1 + COMMENTS_TO_SHOW));
-  //   });
-  // };
 
   window.preview = {
     show: showFullScreenPicture,
