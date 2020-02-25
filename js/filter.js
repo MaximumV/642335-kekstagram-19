@@ -32,7 +32,7 @@
       case filterRandom:
         window.gallery.show(window.picturesData.slice()
           .sort(function () {
-            return window.random.getNumber(0, 2) - 1;
+            return window.random.getNumber(0, 3) - 1.5;
           })
           .slice(0, COUNT_RANDOM_FOTO)
         );
