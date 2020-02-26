@@ -17,23 +17,42 @@
   // загрузка изображения и показ формы
   // ----------------------------------------------
   // пока загружает фото только из из папки проекта
+  // var getUploadFileName = function () {
+  //   var uploadFileInput = document.querySelector('#upload-file');
+  //   var fullFileName = '';
+  //   if (uploadFileInput.value.startsWith('C:\\fakepath')
+  //     && (uploadFileInput.files[0].type === 'image/jpeg')) {
+  //     var fileName = uploadFileInput.value.slice(12);
+  //     fullFileName = 'photos/' + fileName;
+  //   }
+  //   return fullFileName;
+  // };
+
   var getUploadFileName = function () {
     var uploadFileInput = document.querySelector('#upload-file');
-    var fullFileName = '';
-    if (uploadFileInput.value.startsWith('C:\\fakepath')
-      && (uploadFileInput.files[0].type === 'image/jpeg')) {
-      var fileName = uploadFileInput.value.slice(12);
-      fullFileName = 'photos/' + fileName;
-    }
-    return fullFileName;
+    var file = uploadFileInput.files[0];
+    // var fileName = file.name.toLowerCase();
+    // var matches = FILE_TYPES.some(function (it) {
+    //   return fileName.endsWith(it);
+    // });
+
+    var reader = new FileReader();
+    reader.addEventListener('load', function () {
+      editWindow.querySelector('.img-upload__preview img').src = reader.result;
+      editWindow.querySelectorAll('.effects__preview').forEach(function (preview) {
+        preview.style.backgroundImage = 'url(' + reader.result + ')';
+      });
+    });
+    reader.readAsDataURL(file);
   };
 
   var showEditWindow = function () {
-    var uploadFileName = getUploadFileName();
-    if (uploadFileName.length === 0) {
-      uploadFileName = DEFAULT_PHOTO;
-    }
+    var uploadFileName = DEFAULT_PHOTO;
     editWindow.querySelector('.img-upload__preview img').src = uploadFileName;
+    editWindow.querySelectorAll('.effects__preview').forEach(function (preview) {
+      preview.style.backgroundImage = uploadFileName;
+    });
+    getUploadFileName();
 
     resetEditImage();
 
