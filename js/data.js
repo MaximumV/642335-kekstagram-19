@@ -4,7 +4,7 @@
 
   window.picturesData = [];
 
-  window.backend.load(function onSuccessCase(response) {
+  window.backend.load(function (response) {
     try {
       window.picturesData = Array.from(response);
       window.filter.init();
@@ -12,7 +12,7 @@
     } catch (err) {
       window.message.renderErrorLine('Не удалось показать фото других пользователей: ' + err.message);
     }
-  }, function onErrorCase(response) {
+  }, function (response) {
     window.message.renderErrorLine('Не удалось загрузить фото других пользователей: ' + response);
   });
 })();

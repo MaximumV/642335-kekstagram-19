@@ -58,10 +58,10 @@
 
   var onFormSubmit = function (evt) {
     evt.preventDefault();
-    window.backend.send(new FormData(uploadForm), function onSuccessCase() {
+    window.backend.send(new FormData(uploadForm), function () {
       window.modal.close();
       window.message.showSuccess();
-    }, function onErrorCase() {
+    }, function () {
       window.modal.close();
       window.message.showError();
     });
