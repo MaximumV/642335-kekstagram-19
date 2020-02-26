@@ -3,6 +3,7 @@
 (function () {
 
   var DEFAULT_PHOTO = 'img/upload-default-image.jpg';
+  var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 
   var MAX_HASHTAGS_COUNT = 5;
   var MAX_HASHTAG_LENGTH = 20;
@@ -16,26 +17,33 @@
   // ----------------------------------------------
   // загрузка изображения и показ формы
   // ----------------------------------------------
-  // пока загружает фото только из из папки проекта
+  var setUploadedImage = function (imagePath) {
+    editWindow.querySelector('.img-upload__preview img').src = imagePath;
+    editWindow.querySelectorAll('.effects__preview').forEach(function (preview) {
+      preview.style.backgroundImage = 'url(' + imagePath + ')';
+    });
+  };
+
   var getUploadFileName = function () {
     var uploadFileInput = document.querySelector('#upload-file');
-    var fullFileName = '';
-    if (uploadFileInput.value.startsWith('C:\\fakepath')
-      && (uploadFileInput.files[0].type === 'image/jpeg')) {
-      var fileName = uploadFileInput.value.slice(12);
-      fullFileName = 'photos/' + fileName;
+    var file = uploadFileInput.files[0];
+    var fileName = file.name.toLowerCase();
+    var matches = FILE_TYPES.some(function (it) {
+      return fileName.endsWith(it);
+    });
+
+    if (matches) {
+      var reader = new FileReader();
+      reader.addEventListener('load', function () {
+        setUploadedImage(reader.result);
+      });
+      reader.readAsDataURL(file);
     }
-    return fullFileName;
   };
 
   var showEditWindow = function () {
-    var uploadFileName = getUploadFileName();
-    if (uploadFileName.length === 0) {
-      uploadFileName = DEFAULT_PHOTO;
-    }
-    editWindow.querySelector('.img-upload__preview img').src = uploadFileName;
-
     resetEditImage();
+    getUploadFileName();
 
     window.modal.show(editWindow, resetButton, function () {
       resetEditImage();
@@ -63,7 +71,7 @@
     var uploadFileInput = document.querySelector('#upload-file');
 
     uploadForm.action = 'https://js.dump.academy/kekstagram';
-    uploadFileInput.accept = 'image/*';
+    uploadFileInput.accept = '.gif, .jpg, .jpeg, .png';
     resetButton.tabindex = '0';
 
     uploadFileInput.addEventListener('change', function () {
@@ -84,6 +92,7 @@
     resetFilter();
     clearHashtags();
     clearComment();
+    setUploadedImage(DEFAULT_PHOTO);
   };
 
   // ----------------------------------------------
