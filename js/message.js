@@ -2,6 +2,10 @@
 
 (function () {
 
+  var ERROR_LINE_STYLE = 'margin: 0.2em 1em; padding: 1em; left:0; right: 0; '
+  + 'border-top: 1px solid #fff; color: #ffe753; background-color: #3c3614; '
+  + 'text-align: center; position: absolute; height: 4em; overflow-y: auto;';
+
   var container = document.querySelector('main');
   var messageWindow;
   var closeButton;
@@ -44,12 +48,22 @@
     container.append(messageWindow);
   };
 
+  var renderErrorMessageLine = function (errorMessage) {
+    var element = document.createElement('p');
+    element.className = 'backend-error';
+    element.style = ERROR_LINE_STYLE;
+    element.textContent = errorMessage;
+    container.prepend(element);
+  };
+
   window.message = {
     showSuccess: function () {
       showMessageWindow('success');
     },
     showError: function () {
       showMessageWindow('error');
-    }
+    },
+    renderErrorLine: renderErrorMessageLine
   };
+
 })();
