@@ -49,11 +49,11 @@
   };
 
   var renderErrorMessageLine = function (errorMessage) {
-    var element = document.createElement('p');
-    element.className = 'backend-error';
-    element.style = ERROR_LINE_STYLE;
-    element.textContent = errorMessage;
-    container.prepend(element);
+    var messageLine = document.createElement('p');
+    messageLine.className = 'backend-error';
+    messageLine.style = ERROR_LINE_STYLE;
+    messageLine.textContent = errorMessage;
+    container.prepend(messageLine);
   };
 
   window.message = {

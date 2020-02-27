@@ -4,6 +4,8 @@
 
   var DEFAULT_PHOTO = 'img/upload-default-image.jpg';
   var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+  var FILE_INPUT_ACCEPT_LIST = '.gif, .jpg, .jpeg, .png';
+  var FORM_ACTION_ADDRESS = 'https://js.dump.academy/kekstagram';
 
   var MAX_HASHTAGS_COUNT = 5;
   var MAX_HASHTAG_LENGTH = 20;
@@ -12,7 +14,7 @@
   var uploadForm = document.querySelector('#upload-select-image');
   var resetButton = uploadForm.querySelector('#upload-cancel');
   var editWindow = document.querySelector('.img-upload__overlay');
-  var imageElement = document.querySelector('.img-upload__preview img');
+  var imagePreview = document.querySelector('.img-upload__preview img');
 
   // ----------------------------------------------
   // загрузка изображения и показ формы
@@ -70,8 +72,8 @@
   var addUploadProcessing = function () {
     var uploadFileInput = document.querySelector('#upload-file');
 
-    uploadForm.action = 'https://js.dump.academy/kekstagram';
-    uploadFileInput.accept = '.gif, .jpg, .jpeg, .png';
+    uploadForm.action = FORM_ACTION_ADDRESS;
+    uploadFileInput.accept = FILE_INPUT_ACCEPT_LIST;
     resetButton.tabindex = '0';
 
     uploadFileInput.addEventListener('change', function () {
@@ -101,7 +103,7 @@
 
   // масштабирование
   var zoomPicture = function (size) {
-    imageElement.style.transform = 'scale(' + size / 100 + ')';
+    imagePreview.style.transform = 'scale(' + size / 100 + ')';
   };
 
   // эффекты и слайдер
@@ -116,14 +118,14 @@
   };
 
   var applyFilter = function (effect) {
-    imageElement.classList.forEach(function (className) {
+    imagePreview.classList.forEach(function (className) {
       if (className.includes('effects__preview--')) {
-        imageElement.classList.remove(className);
+        imagePreview.classList.remove(className);
       }
     });
     var isSliderVisible = (effect === 'none') ? false : true;
     window.slider.reset(isSliderVisible);
-    imageElement.classList.add('effects__preview--' + effect);
+    imagePreview.classList.add('effects__preview--' + effect);
   };
 
   var initFilter = function () {
@@ -165,7 +167,7 @@
     var effect = getCurrentEffect();
     var level = window.slider.get();
 
-    imageElement.style.filter = getFilterStyleString(effect, level);
+    imagePreview.style.filter = getFilterStyleString(effect, level);
   };
 
   // ----------------------------------------------

@@ -8,10 +8,10 @@
     return 'В модуль нужно передать функцию для слайдера';
   };
 
-  var sliderElement = document.querySelector('.effect-level');
-  var sliderPin = sliderElement.querySelector('.effect-level__pin');
-  var sliderLine = sliderElement.querySelector('.effect-level__line');
-  var sliderValue = sliderElement.querySelector('.effect-level__value');
+  var sliderControl = document.querySelector('.effect-level');
+  var sliderPin = sliderControl.querySelector('.effect-level__pin');
+  var sliderLine = sliderControl.querySelector('.effect-level__line');
+  var sliderValue = sliderControl.querySelector('.effect-level__value');
 
 
   var getSliderLevel = function () {
@@ -19,7 +19,7 @@
   };
 
   var setSliderLevel = function (level) {
-    var sliderDepth = sliderElement.querySelector('.effect-level__depth');
+    var sliderDepth = sliderControl.querySelector('.effect-level__depth');
 
     sliderValue.value = level;
     sliderPin.style.left = level + '%';
@@ -68,9 +68,9 @@
   var resetSlider = function (isVisible) {
     setSliderLevel(DEFAULT_SLIDER_LEVEL);
     if (isVisible) {
-      sliderElement.classList.remove('hidden');
+      sliderControl.classList.remove('hidden');
     } else {
-      sliderElement.classList.add('hidden');
+      sliderControl.classList.add('hidden');
     }
   };
 

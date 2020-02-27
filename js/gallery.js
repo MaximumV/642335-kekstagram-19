@@ -4,22 +4,22 @@
 
   var miniPictureCreate = function (pictureData) {
     var pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
-    var pictureElement = pictureTemplate.cloneNode(true);
+    var picture = pictureTemplate.cloneNode(true);
 
-    pictureElement.querySelector('.picture__img').src = pictureData.url;
-    pictureElement.querySelector('.picture__img').title = pictureData.description;
-    pictureElement.querySelector('.picture__img').alt = pictureData.description;
-    pictureElement.querySelector('.picture__info .picture__comments').textContent = pictureData.comments.length;
-    pictureElement.querySelector('.picture__info .picture__likes').textContent = pictureData.likes;
+    picture.querySelector('.picture__img').src = pictureData.url;
+    picture.querySelector('.picture__img').title = pictureData.description;
+    picture.querySelector('.picture__img').alt = pictureData.description;
+    picture.querySelector('.picture__info .picture__comments').textContent = pictureData.comments.length;
+    picture.querySelector('.picture__info .picture__likes').textContent = pictureData.likes;
 
-    return pictureElement;
+    return picture;
   };
 
   var onPicturesContainerClick = function (evt) {
     // если был клик по картинке
     if (evt.target.classList.contains('picture')
     || evt.target.matches('.picture [class^="picture__"]')) {
-      // элемент img
+      // находит элемент img
       var pictureClicked = evt.target.closest('.pictures .picture').firstElementChild;
       window.preview.show(pictureClicked);
     }
@@ -27,18 +27,18 @@
 
   window.gallery = {
     show: function (picturesData) {
-      var containerElement = document.querySelector('.pictures.container');
+      var container = document.querySelector('.pictures.container');
       var fragment = document.createDocumentFragment();
 
-      containerElement.querySelectorAll('a.picture').forEach(function (miniPicture) {
+      container.querySelectorAll('a.picture').forEach(function (miniPicture) {
         miniPicture.remove();
       });
 
       picturesData.forEach(function (pictureData) {
         fragment.appendChild(miniPictureCreate(pictureData));
       });
-      containerElement.appendChild(fragment);
-      containerElement.addEventListener('click', onPicturesContainerClick);
+      container.appendChild(fragment);
+      container.addEventListener('click', onPicturesContainerClick);
     }
   };
 
