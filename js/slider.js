@@ -35,7 +35,7 @@
     sliderPin.style.cursor = 'grabbing';
 
     var lineWidth = sliderLine.offsetWidth;
-    var lineLeft = sliderLine.getBoundingClientRect().x;
+    var lineLeft = sliderLine.getBoundingClientRect().left;
 
     var onMouseMove = function (moveEvt) {
       moveEvt.preventDefault();
